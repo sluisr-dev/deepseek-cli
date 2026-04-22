@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/github/license/google-gemini/gemini-cli)](https://github.com/google-gemini/gemini-cli/blob/main/LICENSE)
 
 DeepSeek CLI is an open-source AI agent that brings the power of DeepSeek directly
-into your terminal. An unofficial adaptation of Google Gemini CLI by [sluisr](https://github.com/sluisr).
+into your terminal. An unofficial adaptation of Google Gemini CLI by [sluisr](https://sluisr.com).
 
 ## 🚀 Why DeepSeek CLI?
 
@@ -108,5 +108,5 @@ Issues and PRs welcome at [github.com/sluisr-dev/deepseek-cli](https://github.co
 ---
 
 <p align="center">
-  Built by <a href="https://github.com/sluisr">sluisr</a> — fork of Google Gemini CLI
+  Built by <a href="https://sluisr.com">sluisr</a> (<a href="https://github.com/sluisr-dev">@sluisr-dev</a>) — fork of Google Gemini CLI
 </p>
