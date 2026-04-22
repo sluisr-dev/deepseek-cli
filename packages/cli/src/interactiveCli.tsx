@@ -32,12 +32,12 @@ import {
 } from '@google/gemini-cli-core';
 import type { InitializationResult } from './core/initializer.js';
 import type { LoadedSettings } from './config/settings.js';
-import { checkForUpdates } from './ui/utils/updateCheck.js';
-import { handleAutoUpdate } from './utils/handleAutoUpdate.js';
+
 import { SettingsContext } from './ui/contexts/SettingsContext.js';
 import { MouseProvider } from './ui/contexts/MouseContext.js';
 import { StreamingState } from './ui/types.js';
 import { computeTerminalTitle } from './utils/windowTitle.js';
+import { checkForUpdates } from './ui/utils/updateCheck.js';
 
 import { SessionStatsProvider } from './ui/contexts/SessionContext.js';
 import { VimModeProvider } from './ui/contexts/VimModeContext.js';
@@ -177,16 +177,12 @@ export async function startInteractiveUI(
     registerCleanup(cleanupLineWrapping);
   }
 
-  checkForUpdates(settings)
-    .then((info) => {
-      handleAutoUpdate(info, settings, config.getProjectRoot());
-    })
-    .catch((err) => {
-      // Silently ignore update check errors.
-      if (config.getDebugMode()) {
-        debugLogger.warn('Update check failed:', err);
-      }
-    });
+  // Check for updates against deepseek-cli npm package (async, non-blocking)
+  checkForUpdates(settings).then((update) => {
+    if (update) {
+      coreEvents.emitFeedback('info', update.message);
+    }
+  });
 
   const cleanupUnmount = () => instance.unmount();
   registerCleanup(cleanupUnmount);

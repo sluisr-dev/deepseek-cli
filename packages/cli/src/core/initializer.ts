@@ -14,6 +14,7 @@ import {
   logCliConfiguration,
   startupProfiler,
   debugLogger,
+  AuthType,
 } from '@google/gemini-cli-core';
 import { type LoadedSettings } from '../config/settings.js';
 import { performInitialAuth } from './auth.js';
@@ -40,15 +41,17 @@ export async function initializeApp(
   settings: LoadedSettings,
 ): Promise<InitializationResult> {
   const authHandle = startupProfiler.start('authenticate');
+  const savedType = settings.merged.security.auth.selectedType;
+  const deepSeekAuthType =
+    savedType === AuthType.USE_DEEPSEEK ? AuthType.USE_DEEPSEEK : undefined;
   const { authError, accountSuspensionInfo } = await performInitialAuth(
     config,
-    settings.merged.security.auth.selectedType,
+    deepSeekAuthType,
   );
   authHandle?.end();
   const themeError = validateTheme(settings);
 
-  const shouldOpenAuthDialog =
-    settings.merged.security.auth.selectedType === undefined || !!authError;
+  const shouldOpenAuthDialog = !deepSeekAuthType || !!authError;
 
   logCliConfiguration(
     config,

@@ -26,6 +26,12 @@ export function validateAuthMethod(authMethod: string): string | null {
     return null;
   }
 
+  if (authMethod === AuthType.USE_DEEPSEEK) {
+    // Key may be stored in the system keychain — no env var required.
+    // The auth flow will prompt for it if missing, just like USE_GEMINI.
+    return null;
+  }
+
   if (authMethod === AuthType.USE_VERTEX_AI) {
     const hasVertexProjectLocationConfig =
       !!process.env['GOOGLE_CLOUD_PROJECT'] &&

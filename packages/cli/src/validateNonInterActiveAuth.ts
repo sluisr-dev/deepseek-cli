@@ -10,7 +10,7 @@ import {
   ExitCodes,
   getAuthTypeFromEnv,
   type Config,
-  type AuthType,
+  AuthType,
 } from '@google/gemini-cli-core';
 import { USER_SETTINGS_PATH, type LoadedSettings } from './config/settings.js';
 import { validateAuthMethod } from './config/auth.js';
@@ -24,7 +24,13 @@ export async function validateNonInteractiveAuth(
   settings: LoadedSettings,
 ) {
   try {
-    const effectiveAuthType = configuredAuthType || getAuthTypeFromEnv();
+    let effectiveAuthType = getAuthTypeFromEnv() || configuredAuthType;
+    if (process.env['DEEPSEEK_API_KEY']) {
+      effectiveAuthType = AuthType.USE_DEEPSEEK;
+    }
+    if (nonInteractiveConfig.getDebugMode()) {
+      console.log(`[DEBUG] Effective auth type: ${effectiveAuthType}`);
+    }
 
     const enforcedType = settings.merged.security.auth.enforcedType;
     if (enforcedType && effectiveAuthType !== enforcedType) {
@@ -35,7 +41,7 @@ export async function validateNonInteractiveAuth(
     }
 
     if (!effectiveAuthType) {
-      const message = `Please set an Auth method in your ${USER_SETTINGS_PATH} or specify one of the following environment variables before running: GEMINI_API_KEY, GOOGLE_GENAI_USE_VERTEXAI, GOOGLE_GENAI_USE_GCA`;
+      const message = `Please set an Auth method in your ${USER_SETTINGS_PATH} or specify one of the following environment variables before running: GEMINI_API_KEY, DEEPSEEK_API_KEY, GOOGLE_GENAI_USE_VERTEXAI, GOOGLE_GENAI_USE_GCA`;
       throw new Error(message);
     }
 

@@ -102,6 +102,7 @@ export interface UIState {
   isAuthDialogOpen: boolean;
   isAwaitingApiKeyInput: boolean;
   apiKeyDefaultValue?: string;
+  pendingAuthType?: AuthType;
   editorError: string | null;
   isEditorDialogOpen: boolean;
   showPrivacyNotice: boolean;

@@ -16,7 +16,6 @@ import { hooksCommand } from '../commands/hooks.js';
 import { gemmaCommand } from '../commands/gemma.js';
 import {
   setGeminiMdFilename as setServerGeminiMdFilename,
-  getCurrentGeminiMdFilename,
   ApprovalMode,
   DEFAULT_GEMINI_EMBEDDING_MODEL,
   DEFAULT_FILE_FILTERING_OPTIONS,
@@ -29,7 +28,7 @@ import {
   loadServerHierarchicalMemory,
   ASK_USER_TOOL_NAME,
   getVersion,
-  PREVIEW_GEMINI_MODEL_AUTO,
+  DEEPSEEK_CHAT_MODEL,
   type HierarchicalMemory,
   coreEvents,
   GEMINI_MODEL_ALIAS_AUTO,
@@ -556,12 +555,7 @@ export async function loadCliConfig(
   // TODO(b/343434939): This is a bit of a hack. The contextFileName should ideally be passed
   // directly to the Config constructor in core, and have core handle setGeminiMdFilename.
   // However, loadHierarchicalGeminiMemory is called *before* createServerConfig.
-  if (settings.context?.fileName) {
-    setServerGeminiMdFilename(settings.context.fileName);
-  } else {
-    // Reset to default if not provided in settings.
-    setServerGeminiMdFilename(getCurrentGeminiMdFilename());
-  }
+  setServerGeminiMdFilename('DEEPSEEK.md');
 
   const fileService = new FileDiscoveryService(cwd);
 
@@ -800,7 +794,7 @@ export async function loadCliConfig(
     interactive,
   );
 
-  const defaultModel = PREVIEW_GEMINI_MODEL_AUTO;
+  const defaultModel = DEEPSEEK_CHAT_MODEL;
   const specifiedModel =
     argv.model || process.env['GEMINI_MODEL'] || settings.model?.name;
 

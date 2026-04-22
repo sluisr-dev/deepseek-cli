@@ -15,8 +15,10 @@ import {
   DEFAULT_THINKING_MODE,
   DEFAULT_GEMINI_MODEL,
   PREVIEW_GEMINI_FLASH_MODEL,
+  DEEPSEEK_CHAT_MODEL,
   supportsModernFeatures,
 } from '../config/models.js';
+import { AuthType } from '../core/contentGenerator.js';
 import { z } from 'zod';
 import type { Config } from '../config/config.js';
 import { ThinkingLevel } from '@google/genai';
@@ -51,11 +53,16 @@ const CodebaseInvestigationReportSchema = z.object({
 export const CodebaseInvestigatorAgent = (
   config: Config,
 ): LocalAgentDefinition<typeof CodebaseInvestigationReportSchema> => {
-  // Use Preview Flash model if the main model supports modern features.
-  // If the main model is not a modern model, use the default pro model.
-  const model = supportsModernFeatures(config.getModel())
-    ? PREVIEW_GEMINI_FLASH_MODEL
-    : DEFAULT_GEMINI_MODEL;
+  const isDeepSeek =
+    config.getContentGeneratorConfig?.()?.authType === AuthType.USE_DEEPSEEK;
+
+  // Use DeepSeek-chat for investigation when running under DeepSeek auth.
+  // Otherwise use Gemini Flash (modern) or Pro (legacy).
+  const model = isDeepSeek
+    ? DEEPSEEK_CHAT_MODEL
+    : supportsModernFeatures(config.getModel())
+      ? PREVIEW_GEMINI_FLASH_MODEL
+      : DEFAULT_GEMINI_MODEL;
 
   const listCommand =
     process.platform === 'win32'
@@ -97,15 +104,19 @@ export const CodebaseInvestigatorAgent = (
       generateContentConfig: {
         temperature: 0.1,
         topP: 0.95,
-        thinkingConfig: supportsModernFeatures(model)
-          ? {
-              includeThoughts: true,
-              thinkingLevel: ThinkingLevel.HIGH,
-            }
+        ...(isDeepSeek
+          ? {}
           : {
-              includeThoughts: true,
-              thinkingBudget: DEFAULT_THINKING_MODE,
-            },
+              thinkingConfig: supportsModernFeatures(model)
+                ? {
+                    includeThoughts: true,
+                    thinkingLevel: ThinkingLevel.HIGH,
+                  }
+                : {
+                    includeThoughts: true,
+                    thinkingBudget: DEFAULT_THINKING_MODE,
+                  },
+            }),
       },
     },
 

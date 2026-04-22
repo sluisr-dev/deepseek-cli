@@ -320,7 +320,9 @@ export const Footer: React.FC = () => {
         break;
       }
       case 'model-name': {
-        const str = getDisplayString(model);
+        // When using DeepSeek, show the actual DeepSeek model name directly.
+        const isDeepSeekAuth = authType === AuthType.USE_DEEPSEEK;
+        const str = isDeepSeekAuth ? model : getDisplayString(model);
         addCol(
           id,
           header,

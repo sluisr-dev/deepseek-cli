@@ -297,6 +297,7 @@ export const DialogManager = ({
           onCancel={uiActions.handleApiKeyCancel}
           error={uiState.authError}
           defaultValue={uiState.apiKeyDefaultValue}
+          authType={uiState.pendingAuthType}
         />
       </Box>
     );

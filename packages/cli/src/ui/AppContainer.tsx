@@ -67,6 +67,7 @@ import {
   recordExitFail,
   ShellExecutionService,
   saveApiKey,
+  saveDeepSeekApiKey,
   debugLogger,
   coreEvents,
   CoreEvent,
@@ -745,6 +746,8 @@ export const AppContainer = (props: AppContainerProps) => {
     onAuthError,
     apiKeyDefaultValue,
     reloadApiKey,
+    pendingAuthType,
+    setPendingAuthType,
     accountSuspensionInfo,
     setAccountSuspensionInfo,
   } = useAuthCommand(
@@ -753,7 +756,7 @@ export const AppContainer = (props: AppContainerProps) => {
     initializationResult.authError,
     initializationResult.accountSuspensionInfo,
   );
-  const [authContext, setAuthContext] = useState<{ requiresRestart?: boolean }>(
+  const [authContext, setAuthContext] = useState<{ requiresRestart?: boolean; pendingAuthType?: AuthType }>(
     {},
   );
 
@@ -885,9 +888,17 @@ Logging in with Google... Restarting Gemini CLI to continue.
           return;
         }
 
-        await saveApiKey(apiKey);
-        await reloadApiKey();
-        await config.refreshAuth(AuthType.USE_GEMINI);
+        const resolvedAuthType = pendingAuthType ?? authContext.pendingAuthType ?? AuthType.USE_DEEPSEEK;
+        if (resolvedAuthType === AuthType.USE_DEEPSEEK) {
+          await saveDeepSeekApiKey(apiKey);
+          await reloadApiKey(AuthType.USE_DEEPSEEK);
+          await config.refreshAuth(AuthType.USE_DEEPSEEK);
+        } else {
+          await saveApiKey(apiKey);
+          await reloadApiKey(AuthType.USE_GEMINI);
+          await config.refreshAuth(AuthType.USE_GEMINI);
+        }
+        setPendingAuthType(undefined);
         setAuthState(AuthState.Authenticated);
       } catch (e) {
         onAuthError(
@@ -895,7 +906,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
         );
       }
     },
-    [setAuthState, onAuthError, reloadApiKey, config],
+    [setAuthState, onAuthError, reloadApiKey, config, pendingAuthType, authContext.pendingAuthType, setPendingAuthType],
   );
 
   const handleApiKeyCancel = useCallback(() => {
@@ -927,10 +938,13 @@ Logging in with Google... Restarting Gemini CLI to continue.
       settings.merged.security.auth.selectedType &&
       !settings.merged.security.auth.useExternal
     ) {
-      // We skip validation for Gemini API key here because it might be stored
-      // in the keychain, which we can't check synchronously.
-      // The useAuth hook handles validation for this case.
-      if (settings.merged.security.auth.selectedType === AuthType.USE_GEMINI) {
+      // We skip validation for Gemini and DeepSeek API keys here because they
+      // might be stored in the keychain, which we can't check synchronously.
+      // The useAuth hook handles validation for both cases.
+      if (
+        settings.merged.security.auth.selectedType === AuthType.USE_GEMINI ||
+        settings.merged.security.auth.selectedType === AuthType.USE_DEEPSEEK
+      ) {
         return;
       }
 
@@ -2443,6 +2457,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
       isAuthDialogOpen,
       isAwaitingApiKeyInput: authState === AuthState.AwaitingApiKeyInput,
       apiKeyDefaultValue,
+      pendingAuthType: pendingAuthType ?? authContext.pendingAuthType,
       editorError,
       isEditorDialogOpen,
       showPrivacyNotice,
@@ -2642,6 +2657,7 @@ Logging in with Google... Restarting Gemini CLI to continue.
       showDebugProfiler,
       customDialog,
       apiKeyDefaultValue,
+      pendingAuthType,
       authState,
       transientMessage,
       bannerData,

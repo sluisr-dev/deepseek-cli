@@ -10,6 +10,7 @@ import {
   AuthType,
   type Config,
   loadApiKey,
+  loadDeepSeekApiKey,
   debugLogger,
   isAccountSuspendedError,
   ProjectIdRequiredError,
@@ -29,8 +30,8 @@ export function validateAuthMethodWithSettings(
   if (settings.merged.security.auth.useExternal) {
     return null;
   }
-  // If using Gemini API key, we don't validate it here as we might need to prompt for it.
-  if (authType === AuthType.USE_GEMINI) {
+  // If using Gemini or DeepSeek API key, we don't validate here — key may be in keychain.
+  if (authType === AuthType.USE_GEMINI || authType === AuthType.USE_DEEPSEEK) {
     return null;
   }
   return validateAuthMethod(authType);
@@ -54,6 +55,9 @@ export const useAuthCommand = (
   const [apiKeyDefaultValue, setApiKeyDefaultValue] = useState<
     string | undefined
   >(undefined);
+  const [pendingAuthType, setPendingAuthType] = useState<AuthType | undefined>(
+    undefined,
+  );
 
   const onAuthError = useCallback(
     (error: string | null) => {
@@ -65,17 +69,30 @@ export const useAuthCommand = (
     [setAuthError, setAuthState],
   );
 
-  const reloadApiKey = useCallback(async () => {
-    const envKey = process.env['GEMINI_API_KEY'];
-    if (envKey !== undefined) {
-      setApiKeyDefaultValue(envKey);
-      return envKey;
-    }
-
-    const storedKey = (await loadApiKey()) ?? '';
-    setApiKeyDefaultValue(storedKey);
-    return storedKey;
-  }, []);
+  const reloadApiKey = useCallback(
+    async (authType?: AuthType) => {
+      const resolvedType = authType ?? pendingAuthType;
+      if (resolvedType === AuthType.USE_DEEPSEEK) {
+        const envKey = process.env['DEEPSEEK_API_KEY'];
+        if (envKey) {
+          setApiKeyDefaultValue(envKey);
+          return envKey;
+        }
+        const storedKey = (await loadDeepSeekApiKey()) ?? '';
+        setApiKeyDefaultValue(storedKey);
+        return storedKey;
+      }
+      const envKey = process.env['GEMINI_API_KEY'];
+      if (envKey !== undefined) {
+        setApiKeyDefaultValue(envKey);
+        return envKey;
+      }
+      const storedKey = (await loadApiKey()) ?? '';
+      setApiKeyDefaultValue(storedKey);
+      return storedKey;
+    },
+    [pendingAuthType],
+  );
 
   useEffect(() => {
     if (authState === AuthState.AwaitingApiKeyInput) {
@@ -91,21 +108,21 @@ export const useAuthCommand = (
         return;
       }
 
-      const authType = settings.merged.security.auth.selectedType;
+      const savedAuthType = settings.merged.security.auth.selectedType;
+      const authType = process.env['DEEPSEEK_API_KEY']
+        ? AuthType.USE_DEEPSEEK
+        : savedAuthType === AuthType.USE_DEEPSEEK
+          ? AuthType.USE_DEEPSEEK
+          : undefined;
       if (!authType) {
-        if (process.env['GEMINI_API_KEY']) {
-          onAuthError(
-            'Existing API key detected (GEMINI_API_KEY). Select "Gemini API Key" option to use it.',
-          );
-        } else {
-          onAuthError('No authentication method selected.');
-        }
+        onAuthError('No authentication method selected.');
         return;
       }
 
-      if (authType === AuthType.USE_GEMINI) {
-        const key = await reloadApiKey(); // Use the unified function
+      if (authType === AuthType.USE_DEEPSEEK) {
+        const key = await reloadApiKey(authType);
         if (!key) {
+          setPendingAuthType(authType);
           setAuthState(AuthState.AwaitingApiKeyInput);
           return;
         }
@@ -170,6 +187,8 @@ export const useAuthCommand = (
     onAuthError,
     apiKeyDefaultValue,
     reloadApiKey,
+    pendingAuthType,
+    setPendingAuthType,
     accountSuspensionInfo,
     setAccountSuspensionInfo,
   };

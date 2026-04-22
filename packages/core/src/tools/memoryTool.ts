@@ -29,8 +29,8 @@ import type { MessageBus } from '../confirmation-bus/message-bus.js';
 import { MEMORY_DEFINITION } from './definitions/coreTools.js';
 import { resolveToolDeclaration } from './definitions/resolver.js';
 
-export const DEFAULT_CONTEXT_FILENAME = 'GEMINI.md';
-export const MEMORY_SECTION_HEADER = '## Gemini Added Memories';
+export const DEFAULT_CONTEXT_FILENAME = 'DEEPSEEK.md';
+export const MEMORY_SECTION_HEADER = '## DeepSeek Added Memories';
 
 // This variable will hold the currently configured filename for GEMINI.md context files.
 // It defaults to DEFAULT_CONTEXT_FILENAME but can be overridden by setGeminiMdFilename.

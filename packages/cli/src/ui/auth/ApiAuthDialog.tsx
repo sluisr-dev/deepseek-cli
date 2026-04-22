@@ -11,7 +11,12 @@ import { theme } from '../semantic-colors.js';
 import { TextInput } from '../components/shared/TextInput.js';
 import { useTextBuffer } from '../components/shared/text-buffer.js';
 import { useUIState } from '../contexts/UIStateContext.js';
-import { clearApiKey, debugLogger } from '@google/gemini-cli-core';
+import {
+  AuthType,
+  clearApiKey,
+  clearDeepSeekApiKey,
+  debugLogger,
+} from '@google/gemini-cli-core';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { Command } from '../key/keyMatchers.js';
 import { useKeyMatchers } from '../hooks/useKeyMatchers.js';
@@ -21,6 +26,7 @@ interface ApiAuthDialogProps {
   onCancel: () => void;
   error?: string | null;
   defaultValue?: string;
+  authType?: AuthType;
 }
 
 export function ApiAuthDialog({
@@ -28,7 +34,9 @@ export function ApiAuthDialog({
   onCancel,
   error,
   defaultValue = '',
+  authType = AuthType.USE_DEEPSEEK,
 }: ApiAuthDialogProps): React.JSX.Element {
+  const isDeepSeek = authType === AuthType.USE_DEEPSEEK;
   const keyMatchers = useKeyMatchers();
   const { terminalWidth } = useUIState();
   const viewportWidth = terminalWidth - 8;
@@ -64,8 +72,9 @@ export function ApiAuthDialog({
     pendingPromise.current?.cancel();
 
     let isCancelled = false;
+    const clearFn = isDeepSeek ? clearDeepSeekApiKey : clearApiKey;
     const wrappedPromise = new Promise<void>((resolve, reject) => {
-      clearApiKey().then(
+      clearFn().then(
         () => !isCancelled && resolve(),
         (error) => !isCancelled && reject(error),
       );
@@ -106,17 +115,20 @@ export function ApiAuthDialog({
       width="100%"
     >
       <Text bold color={theme.text.primary}>
-        Enter Gemini API Key
+        {isDeepSeek ? 'Enter DeepSeek API Key' : 'Enter Gemini API Key'}
       </Text>
       <Box marginTop={1} flexDirection="column">
         <Text color={theme.text.primary}>
-          Please enter your Gemini API key. It will be securely stored in your
-          system keychain.
+          {isDeepSeek
+            ? 'Please enter your DeepSeek API key. It will be securely stored in your system keychain.'
+            : 'Please enter your Gemini API key. It will be securely stored in your system keychain.'}
         </Text>
         <Text color={theme.text.secondary}>
           You can get an API key from{' '}
           <Text color={theme.text.link}>
-            https://aistudio.google.com/app/apikey
+            {isDeepSeek
+              ? 'https://platform.deepseek.com/api_keys'
+              : 'https://aistudio.google.com/app/apikey'}
           </Text>
         </Text>
       </Box>

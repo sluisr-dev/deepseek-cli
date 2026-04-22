@@ -5,6 +5,7 @@
  */
 
 import { GemmaClassifierStrategy } from './strategies/gemmaClassifierStrategy.js';
+import { DeepSeekClassifierStrategy } from './strategies/deepseekClassifierStrategy.js';
 import type { Config } from '../config/config.js';
 import type {
   RoutingContext,
@@ -39,8 +40,14 @@ export class ModelRouterService {
   private initializeDefaultStrategy(): TerminalStrategy {
     const strategies: RoutingStrategy[] = [];
 
-    // Order matters here. Fallback and override are checked first.
+    // Order matters here. Fallback is checked first.
     strategies.push(new FallbackStrategy());
+
+    // DeepSeek classifier runs before OverrideStrategy so it can escalate
+    // deepseek-chat → deepseek-reasoner before the override short-circuits.
+    strategies.push(new DeepSeekClassifierStrategy());
+
+    // Override handles explicit --model flags (non-auto models).
     strategies.push(new OverrideStrategy());
 
     // Approval mode is next.

@@ -25,6 +25,8 @@ import {
   AuthType,
   PREVIEW_GEMINI_3_1_CUSTOM_TOOLS_MODEL,
   isProModel,
+  DEEPSEEK_CHAT_MODEL,
+  DEEPSEEK_REASONER_MODEL,
 } from '@google/gemini-cli-core';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { theme } from '../semantic-colors.js';
@@ -68,6 +70,7 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
   const useGemini31FlashLite =
     config?.getGemini31FlashLiteLaunchedSync?.() ?? false;
   const selectedAuthType = settings.merged.security.auth.selectedType;
+  const isDeepSeekAuth = selectedAuthType === AuthType.USE_DEEPSEEK;
   const useCustomToolModel =
     useGemini31 && selectedAuthType === AuthType.USE_GEMINI;
 
@@ -121,6 +124,24 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
   );
 
   const mainOptions = useMemo(() => {
+    // --- DEEPSEEK PATH ---
+    if (isDeepSeekAuth) {
+      return [
+        {
+          value: DEEPSEEK_CHAT_MODEL,
+          title: DEEPSEEK_CHAT_MODEL,
+          description: 'General-purpose model — fast and capable',
+          key: DEEPSEEK_CHAT_MODEL,
+        },
+        {
+          value: DEEPSEEK_REASONER_MODEL,
+          title: DEEPSEEK_REASONER_MODEL,
+          description: 'Reasoning model — best for complex tasks (slower)',
+          key: DEEPSEEK_REASONER_MODEL,
+        },
+      ];
+    }
+
     // --- DYNAMIC PATH ---
     if (
       config?.getExperimentalDynamicModelConfiguration?.() === true &&

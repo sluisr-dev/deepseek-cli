@@ -1,0 +1,279 @@
+.calculator {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.calculator-controls {
+  margin-bottom: 2rem;
+}
+
+.mode-selector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.mode-selector label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.mode-selector label:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mode-selector input[type="radio"] {
+  margin: 0;
+}
+
+.expression-display {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.expression-display input {
+  flex: 1;
+  padding: 1rem;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--light-text);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.expression-display input:focus {
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.calculate-btn {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.calculate-btn:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.calculate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.result-display {
+  min-height: 100px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  color: var(--light-text);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.error {
+  color: var(--error);
+  font-weight: 600;
+  text-align: center;
+}
+
+.success {
+  text-align: center;
+}
+
+.result-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.steps {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.step {
+  margin: 0.25rem 0;
+}
+
+.placeholder {
+  color: #999;
+  text-align: center;
+  font-style: italic;
+}
+
+.keypad {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.keypad-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.keypad-btn {
+  flex: 1;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keypad-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.keypad-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.keypad-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.keypad-btn.number {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--light-text);
+}
+
+.keypad-btn.number:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 1);
+}
+
+.keypad-btn.operator {
+  background: var(--primary);
+  color: white;
+}
+
+.keypad-btn.operator:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.keypad-btn.scientific {
+  background: var(--secondary);
+  color: white;
+  font-size: 1rem;
+}
+
+.keypad-btn.scientific:hover:not(:disabled) {
+  background: #6b3d8f;
+}
+
+.keypad-btn.active {
+  background: var(--warning);
+  color: white;
+}
+
+.empty-btn {
+  flex: 1;
+  visibility: hidden;
+}
+
+.examples {
+  margin-top: 2rem;
+}
+
+.examples h3 {
+  margin-bottom: 1rem;
+  text-align: center;
+  color: inherit;
+}
+
+.example-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.example-buttons button {
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.example-buttons button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calculator {
+    padding: 1rem;
+  }
+  
+  .keypad-btn {
+    padding: 0.75rem;
+    font-size: 1rem;
+    min-height: 50px;
+  }
+  
+  .expression-display {
+    flex-direction: column;
+  }
+  
+  .calculate-btn {
+    width: 100%;
+  }
+  
+  .example-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .keypad-btn {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    min-height: 45px;
+  }
+  
+  .mode-selector {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .mode-selector label {
+    width: 100%;
+    justify-content: center;
+  }
+}
