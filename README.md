@@ -1,7 +1,7 @@
 # DeepSeek CLI
 
 > **Unofficial fork** of [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) adapted to use the [DeepSeek API](https://platform.deepseek.com).
-> Original work © 2025 Google LLC — Adaptations © 2025 sluisr — Apache 2.0 License.
+> Original work © 2025 Google LLC — Adaptations © 2026 sluisr — Apache 2.0 License.
 
 [![License](https://img.shields.io/github/license/google-gemini/gemini-cli)](https://github.com/google-gemini/gemini-cli/blob/main/LICENSE)
 
