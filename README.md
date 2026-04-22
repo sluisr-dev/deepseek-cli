@@ -65,7 +65,7 @@ deepseek --include-directories ../lib,../docs
 - **Conversation checkpointing** — save and resume complex sessions
 - **Context files** — create `DEEPSEEK.md` in any project for persistent instructions
 
-## �️ Built-in Tools
+## 🔨 Built-in Tools
 
 - File system operations (read, write, edit, search)
 - Shell command execution
@@ -84,7 +84,7 @@ deepseek
 > Explain what this codebase does
 ```
 
-## ⚙️ Configuration
+## ⚙ Configuration
 
 Settings are stored in `~/.deepseek/settings.json`. MCP servers can be configured there:
 
@@ -100,7 +100,7 @@ Settings are stored in `~/.deepseek/settings.json`. MCP servers can be configure
 
 Issues and PRs welcome at [github.com/sluisr-dev/deepseek-cli](https://github.com/sluisr-dev/deepseek-cli).
 
-## � Legal
+## 📋 Legal
 
 - **License**: [Apache License 2.0](LICENSE)
 - **Original project**: [google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli)
