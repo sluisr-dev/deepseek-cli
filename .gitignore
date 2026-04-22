@@ -1,3 +1,7 @@
+# Local projects and IDE config
+calculadora-potente/
+.windsurf/
+
 # API keys and secrets
 .env
 .env~
