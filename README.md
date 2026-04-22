@@ -20,372 +20,93 @@ into your terminal. An unofficial adaptation of Google Gemini CLI by [sluisr](ht
 
 ## 📦 Installation
 
-See
-[Gemini CLI installation, execution, and releases](https://www.geminicli.com/docs/get-started/installation)
-for recommended system specifications and a detailed installation guide.
-
 ### Quick Install
 
-#### Run instantly with npx
-
 ```bash
-# Using npx (no installation required)
-npx @google/gemini-cli
+npm install -g @sluisr/deepseek-cli
 ```
 
-#### Install globally with npm
+Then run:
 
 ```bash
-npm install -g @google/gemini-cli
+deepseek
 ```
 
-#### Install globally with Homebrew (macOS/Linux)
+## 🔐 Authentication
+
+Get your API key at [platform.deepseek.com/api_keys](https://platform.deepseek.com/api_keys) and set it:
 
 ```bash
-brew install gemini-cli
+export DEEPSEEK_API_KEY="your-api-key-here"
+deepseek
 ```
 
-#### Install globally with MacPorts (macOS)
+Or enter it directly when prompted on first launch.
+
+## 🚀 Getting Started
 
 ```bash
-sudo port install gemini-cli
-```
+# Start in current directory
+deepseek
 
-#### Install with Anaconda (for restricted environments)
+# Non-interactive mode
+deepseek -p "Explain the architecture of this codebase"
 
-```bash
-# Create and activate a new environment
-conda create -y -n gemini_env -c conda-forge nodejs
-conda activate gemini_env
-
-# Install Gemini CLI globally via npm (inside the environment)
-npm install -g @google/gemini-cli
-```
-
-## Release Channels
-
-See [Releases](https://www.geminicli.com/docs/changelogs) for more details.
-
-### Preview
-
-New preview releases will be published each week at UTC 23:59 on Tuesdays. These
-releases will not have been fully vetted and may contain regressions or other
-outstanding issues. Please help us test and install with `preview` tag.
-
-```bash
-npm install -g @google/gemini-cli@preview
-```
-
-### Stable
-
-- New stable releases will be published each week at UTC 20:00 on Tuesdays, this
-  will be the full promotion of last week's `preview` release + any bug fixes
-  and validations. Use `latest` tag.
-
-```bash
-npm install -g @google/gemini-cli@latest
-```
-
-### Nightly
-
-- New releases will be published each day at UTC 00:00. This will be all changes
-  from the main branch as represented at time of release. It should be assumed
-  there are pending validations and issues. Use `nightly` tag.
-
-```bash
-npm install -g @google/gemini-cli@nightly
+# Include multiple directories
+deepseek --include-directories ../lib,../docs
 ```
 
 ## 📋 Key Features
 
-### Code Understanding & Generation
+- **Agentic coding** — reads, edits, and creates files autonomously
+- **Shell execution** — runs commands, installs dependencies, starts servers
+- **Memory persistence** — saves context to `~/.deepseek/DEEPSEEK.md`
+- **MCP support** — extend with custom tools via Model Context Protocol
+- **Conversation checkpointing** — save and resume complex sessions
+- **Context files** — create `DEEPSEEK.md` in any project for persistent instructions
 
-- Query and edit large codebases
-- Generate new apps from PDFs, images, or sketches using multimodal capabilities
-- Debug issues and troubleshoot with natural language
+## �️ Built-in Tools
 
-### Automation & Integration
+- File system operations (read, write, edit, search)
+- Shell command execution
+- Web fetch
+- Memory save/load (`~/.deepseek/DEEPSEEK.md`)
+- MCP server integration
 
-- Automate operational tasks like querying pull requests or handling complex
-  rebases
-- Use MCP servers to connect new capabilities, including
-  [media generation with Imagen, Veo or Lyria](https://github.com/GoogleCloudPlatform/vertex-ai-creative-studio/tree/main/experiments/mcp-genmedia)
-- Run non-interactively in scripts for workflow automation
-
-### Advanced Capabilities
-
-- Ground your queries with built-in
-  [Google Search](https://ai.google.dev/gemini-api/docs/grounding) for real-time
-  information
-- Conversation checkpointing to save and resume complex sessions
-- Custom context files (GEMINI.md) to tailor behavior for your projects
-
-### GitHub Integration
-
-Integrate Gemini CLI directly into your GitHub workflows with
-[**Gemini CLI GitHub Action**](https://github.com/google-github-actions/run-gemini-cli):
-
-- **Pull Request Reviews**: Automated code review with contextual feedback and
-  suggestions
-- **Issue Triage**: Automated labeling and prioritization of GitHub issues based
-  on content analysis
-- **On-demand Assistance**: Mention `@gemini-cli` in issues and pull requests
-  for help with debugging, explanations, or task delegation
-- **Custom Workflows**: Build automated, scheduled and on-demand workflows
-  tailored to your team's needs
-
-## 🔐 Authentication Options
-
-Choose the authentication method that best fits your needs:
-
-### Option 1: Sign in with Google (OAuth login using your Google Account)
-
-**✨ Best for:** Individual developers as well as anyone who has a Gemini Code
-Assist License. (see
-[quota limits and terms of service](https://cloud.google.com/gemini/docs/quotas)
-for details)
-
-**Benefits:**
-
-- **Free tier**: 60 requests/min and 1,000 requests/day
-- **Gemini 3 models** with 1M token context window
-- **No API key management** - just sign in with your Google account
-- **Automatic updates** to latest models
-
-#### Start Gemini CLI, then choose _Sign in with Google_ and follow the browser authentication flow when prompted
+## 💬 Example Usage
 
 ```bash
-gemini
+cd my-project/
+deepseek
+> Build me a REST API with authentication
+> Fix the bug in src/auth.ts
+> Write tests for the payment module
+> Explain what this codebase does
 ```
 
-#### If you are using a paid Code Assist License from your organization, remember to set the Google Cloud Project
+## ⚙️ Configuration
 
-```bash
-# Set your Google Cloud Project
-export GOOGLE_CLOUD_PROJECT="YOUR_PROJECT_ID"
-gemini
+Settings are stored in `~/.deepseek/settings.json`. MCP servers can be configured there:
+
+```json
+{
+  "mcpServers": {
+    "github": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"] }
+  }
+}
 ```
-
-### Option 2: Gemini API Key
-
-**✨ Best for:** Developers who need specific model control or paid tier access
-
-**Benefits:**
-
-- **Free tier**: 1000 requests/day with Gemini 3 (mix of flash and pro)
-- **Model selection**: Choose specific Gemini models
-- **Usage-based billing**: Upgrade for higher limits when needed
-
-```bash
-# Get your key from https://aistudio.google.com/apikey
-export GEMINI_API_KEY="YOUR_API_KEY"
-gemini
-```
-
-### Option 3: Vertex AI
-
-**✨ Best for:** Enterprise teams and production workloads
-
-**Benefits:**
-
-- **Enterprise features**: Advanced security and compliance
-- **Scalable**: Higher rate limits with billing account
-- **Integration**: Works with existing Google Cloud infrastructure
-
-```bash
-# Get your key from Google Cloud Console
-export GOOGLE_API_KEY="YOUR_API_KEY"
-export GOOGLE_GENAI_USE_VERTEXAI=true
-gemini
-```
-
-For Google Workspace accounts and other authentication methods, see the
-[authentication guide](https://www.geminicli.com/docs/get-started/authentication).
-
-## 🚀 Getting Started
-
-### Basic Usage
-
-#### Start in current directory
-
-```bash
-gemini
-```
-
-#### Include multiple directories
-
-```bash
-gemini --include-directories ../lib,../docs
-```
-
-#### Use specific model
-
-```bash
-gemini -m gemini-2.5-flash
-```
-
-#### Non-interactive mode for scripts
-
-Get a simple text response:
-
-```bash
-gemini -p "Explain the architecture of this codebase"
-```
-
-For more advanced scripting, including how to parse JSON and handle errors, use
-the `--output-format json` flag to get structured output:
-
-```bash
-gemini -p "Explain the architecture of this codebase" --output-format json
-```
-
-For real-time event streaming (useful for monitoring long-running operations),
-use `--output-format stream-json` to get newline-delimited JSON events:
-
-```bash
-gemini -p "Run tests and deploy" --output-format stream-json
-```
-
-### Quick Examples
-
-#### Start a new project
-
-```bash
-cd new-project/
-gemini
-> Write me a Discord bot that answers questions using a FAQ.md file I will provide
-```
-
-#### Analyze existing code
-
-```bash
-git clone https://github.com/google-gemini/gemini-cli
-cd gemini-cli
-gemini
-> Give me a summary of all of the changes that went in yesterday
-```
-
-## 📚 Documentation
-
-### Getting Started
-
-- [**Quickstart Guide**](https://www.geminicli.com/docs/get-started) - Get up
-  and running quickly.
-- [**Authentication Setup**](https://www.geminicli.com/docs/get-started/authentication) -
-  Detailed auth configuration.
-- [**Configuration Guide**](https://www.geminicli.com/docs/reference/configuration) -
-  Settings and customization.
-- [**Keyboard Shortcuts**](https://www.geminicli.com/docs/reference/keyboard-shortcuts) -
-  Productivity tips.
-
-### Core Features
-
-- [**Commands Reference**](https://www.geminicli.com/docs/reference/commands) -
-  All slash commands (`/help`, `/chat`, etc).
-- [**Custom Commands**](https://www.geminicli.com/docs/cli/custom-commands) -
-  Create your own reusable commands.
-- [**Context Files (GEMINI.md)**](https://www.geminicli.com/docs/cli/gemini-md) -
-  Provide persistent context to Gemini CLI.
-- [**Checkpointing**](https://www.geminicli.com/docs/cli/checkpointing) - Save
-  and resume conversations.
-- [**Token Caching**](https://www.geminicli.com/docs/cli/token-caching) -
-  Optimize token usage.
-
-### Tools & Extensions
-
-- [**Built-in Tools Overview**](https://www.geminicli.com/docs/reference/tools)
-  - [File System Operations](https://www.geminicli.com/docs/tools/file-system)
-  - [Shell Commands](https://www.geminicli.com/docs/tools/shell)
-  - [Web Fetch & Search](https://www.geminicli.com/docs/tools/web-fetch)
-- [**MCP Server Integration**](https://www.geminicli.com/docs/tools/mcp-server) -
-  Extend with custom tools.
-- [**Custom Extensions**](https://geminicli.com/docs/extensions/writing-extensions) -
-  Build and share your own commands.
-
-### Advanced Topics
-
-- [**Headless Mode (Scripting)**](https://www.geminicli.com/docs/cli/headless) -
-  Use Gemini CLI in automated workflows.
-- [**IDE Integration**](https://www.geminicli.com/docs/ide-integration) - VS
-  Code companion.
-- [**Sandboxing & Security**](https://www.geminicli.com/docs/cli/sandbox) - Safe
-  execution environments.
-- [**Trusted Folders**](https://www.geminicli.com/docs/cli/trusted-folders) -
-  Control execution policies by folder.
-- [**Enterprise Guide**](https://www.geminicli.com/docs/cli/enterprise) - Deploy
-  and manage in a corporate environment.
-- [**Telemetry & Monitoring**](https://www.geminicli.com/docs/cli/telemetry) -
-  Usage tracking.
-- [**Tools reference**](https://www.geminicli.com/docs/reference/tools) -
-  Built-in tools overview.
-- [**Local development**](https://www.geminicli.com/docs/local-development) -
-  Local development tooling.
-
-### Troubleshooting & Support
-
-- [**Troubleshooting Guide**](https://www.geminicli.com/docs/resources/troubleshooting) -
-  Common issues and solutions.
-- [**FAQ**](https://www.geminicli.com/docs/resources/faq) - Frequently asked
-  questions.
-- Use `/bug` command to report issues directly from the CLI.
-
-### Using MCP Servers
-
-Configure MCP servers in `~/.gemini/settings.json` to extend Gemini CLI with
-custom tools:
-
-```text
-> @github List my open pull requests
-> @slack Send a summary of today's commits to #dev channel
-> @database Run a query to find inactive users
-```
-
-See the
-[MCP Server Integration guide](https://www.geminicli.com/docs/tools/mcp-server)
-for setup instructions.
 
 ## 🤝 Contributing
 
-We welcome contributions! Gemini CLI is fully open source (Apache 2.0), and we
-encourage the community to:
+Issues and PRs welcome at [github.com/sluisr-dev/deepseek-cli](https://github.com/sluisr-dev/deepseek-cli).
 
-- Report bugs and suggest features.
-- Improve documentation.
-- Submit code improvements.
-- Share your MCP servers and extensions.
-
-See our [Contributing Guide](./CONTRIBUTING.md) for development setup, coding
-standards, and how to submit pull requests.
-
-Check our [Official Roadmap](https://github.com/orgs/google-gemini/projects/11)
-for planned features and priorities.
-
-## 📖 Resources
-
-- **[Official Roadmap](./ROADMAP.md)** - See what's coming next.
-- **[Changelog](https://www.geminicli.com/docs/changelogs)** - See recent
-  notable updates.
-- **[NPM Package](https://www.npmjs.com/package/@google/gemini-cli)** - Package
-  registry.
-- **[GitHub Issues](https://github.com/google-gemini/gemini-cli/issues)** -
-  Report bugs or request features.
-- **[Security Advisories](https://github.com/google-gemini/gemini-cli/security/advisories)** -
-  Security updates.
-
-### Uninstall
-
-See the [Uninstall Guide](https://www.geminicli.com/docs/resources/uninstall)
-for removal instructions.
-
-## 📄 Legal
+## � Legal
 
 - **License**: [Apache License 2.0](LICENSE)
-- **Terms of Service**:
-  [Terms & Privacy](https://www.geminicli.com/docs/resources/tos-privacy)
-- **Security**: [Security Policy](SECURITY.md)
+- **Original project**: [google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli)
 
 ---
 
 <p align="center">
-  Built with ❤️ by Google and the open source community
+  Built by <a href="https://github.com/sluisr">sluisr</a> — fork of Google Gemini CLI
 </p>
