@@ -135,8 +135,17 @@ export class DeepSeekContentGenerator implements ContentGenerator {
 
           const content = textParts.map((p: any) => p.text).join('') || '';
 
+          const assistantMessage: any = {
+            role: 'assistant',
+            content: content, // Never null for proxy compatibility
+          };
+
+          if (reasoning_content) {
+            assistantMessage.reasoning_content = reasoning_content;
+          }
+
           if (fnCallParts.length > 0) {
-            const tool_calls = fnCallParts.map((p: any) => {
+            assistantMessage.tool_calls = fnCallParts.map((p: any) => {
               const id = `call_${toolCallCounter++}`;
               pendingCalls.push({ name: p.functionCall.name, id });
               return {
@@ -148,19 +157,8 @@ export class DeepSeekContentGenerator implements ContentGenerator {
                 },
               };
             });
-            messages.push({
-              role: 'assistant',
-              content: content || null,
-              reasoning_content,
-              tool_calls,
-            });
-          } else {
-            messages.push({
-              role: 'assistant',
-              content,
-              reasoning_content,
-            });
           }
+          messages.push(assistantMessage);
         } else {
           const fnRespParts = parts.filter((p: any) => p.functionResponse);
           const textParts = parts.filter((p: any) => p.text);
