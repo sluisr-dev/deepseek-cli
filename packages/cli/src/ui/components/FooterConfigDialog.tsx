@@ -237,7 +237,7 @@ export const FooterConfigDialog: React.FC<FooterConfigDialogProps> = ({
       'git-branch': <Text color={getColor('git-branch', itemColor)}>main</Text>,
       sandbox: <Text color={getColor('sandbox', 'green')}>docker</Text>,
       'model-name': (
-        <Text color={getColor('model-name', itemColor)}>deepseek-chat</Text>
+        <Text color={getColor('model-name', itemColor)}>deepseek-v4-flash</Text>
       ),
       'context-used': (
         <Text color={getColor('context-used', itemColor)}>85% used</Text>

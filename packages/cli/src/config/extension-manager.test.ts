@@ -22,7 +22,7 @@ import {
   getRealPath,
   type CustomTheme,
   IntegrityDataStatus,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 const mockHomedir = vi.hoisted(() => vi.fn(() => '/tmp/mock-home'));
 const mockIntegrityManager = vi.hoisted(() => ({
@@ -38,9 +38,9 @@ vi.mock('os', async (importOriginal) => {
   };
 });
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     homedir: mockHomedir,

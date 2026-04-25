@@ -30,7 +30,7 @@ import {
   type TelemetryTarget,
   type ConfigParameters,
   type ExtensionLoader,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 import { logger } from '../utils/logger.js';
 import type { Settings } from './settings.js';

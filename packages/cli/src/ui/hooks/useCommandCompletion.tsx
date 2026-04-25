@@ -20,7 +20,7 @@ import {
   PROMPT_COMPLETION_MIN_LENGTH,
   type PromptCompletion,
 } from './usePromptCompletion.js';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@sluisr/deepseek-cli-core';
 import { useCompletion } from './useCompletion.js';
 
 export enum CompletionMode {

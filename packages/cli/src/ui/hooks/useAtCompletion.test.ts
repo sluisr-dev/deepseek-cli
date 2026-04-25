@@ -16,7 +16,7 @@ import {
   escapePath,
   type Config,
   type FileSearch,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   createTmpDir,
   cleanupTmpDir,

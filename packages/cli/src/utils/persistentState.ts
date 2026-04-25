@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Storage, debugLogger } from '@google/gemini-cli-core';
+import { Storage, debugLogger } from '@sluisr/deepseek-cli-core';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 

@@ -5,7 +5,7 @@
  */
 
 import { describe, expect } from 'vitest';
-import { ApprovalMode, isRecord } from '@google/gemini-cli-core';
+import { ApprovalMode, isRecord } from '@sluisr/deepseek-cli-core';
 import { appEvalTest, type AppEvalCase } from './app-test-helper.js';
 import { type EvalPolicy } from './test-helper.js';
 
@@ -76,7 +76,7 @@ describe('ask_user', () => {
       'packages/core/src/index.ts': '// index\nexport const version = "1.0.0";',
       'packages/core/src/util.ts': '// util\nexport function help() {}',
       'packages/core/package.json': JSON.stringify({
-        name: '@google/gemini-cli-core',
+        name: '@sluisr/deepseek-cli-core',
       }),
       'README.md': '# Gemini CLI',
     },

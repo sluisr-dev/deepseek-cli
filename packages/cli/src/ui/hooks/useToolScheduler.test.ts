@@ -21,13 +21,13 @@ import {
   ROOT_SCHEDULER_ID,
   CoreToolCallStatus,
   type WaitingToolCall,
-} from '@google/gemini-cli-core';
-import { createMockMessageBus } from '@google/gemini-cli-core/src/test-utils/mock-message-bus.js';
+} from '@sluisr/deepseek-cli-core';
+import { createMockMessageBus } from '@sluisr/deepseek-cli-core/src/test-utils/mock-message-bus.js';
 
 // Mock Core Scheduler
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     Scheduler: vi.fn().mockImplementation(() => ({
@@ -274,7 +274,7 @@ describe('useToolScheduler', () => {
     };
 
     // Mock the specific return value for this test
-    const { Scheduler } = await import('@google/gemini-cli-core');
+    const { Scheduler } = await import('@sluisr/deepseek-cli-core');
     vi.mocked(Scheduler).mockImplementation(
       () =>
         ({

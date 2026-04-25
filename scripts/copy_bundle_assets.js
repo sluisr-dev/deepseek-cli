@@ -17,7 +17,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { copyFileSync, existsSync, mkdirSync, cpSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, cpSync, rmSync } from 'node:fs';
 import { dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { glob } from 'glob';
@@ -58,6 +58,7 @@ console.log(`Copied ${policyFiles.length} policy files to bundle/policies/`);
 const docsSrc = join(root, 'docs');
 const docsDest = join(bundleDir, 'docs');
 if (existsSync(docsSrc)) {
+  if (existsSync(docsDest)) rmSync(docsDest, { recursive: true, force: true });
   cpSync(docsSrc, docsDest, { recursive: true, dereference: true });
   console.log('Copied docs to bundle/docs/');
 }
@@ -66,10 +67,8 @@ if (existsSync(docsSrc)) {
 const builtinSkillsSrc = join(root, 'packages/core/src/skills/builtin');
 const builtinSkillsDest = join(bundleDir, 'builtin');
 if (existsSync(builtinSkillsSrc)) {
-  cpSync(builtinSkillsSrc, builtinSkillsDest, {
-    recursive: true,
-    dereference: true,
-  });
+  if (existsSync(builtinSkillsDest)) rmSync(builtinSkillsDest, { recursive: true, force: true });
+  cpSync(builtinSkillsSrc, builtinSkillsDest, { recursive: true, dereference: true });
   console.log('Copied built-in skills to bundle/builtin/');
 }
 
@@ -84,10 +83,9 @@ const devtoolsDest = join(
 const devtoolsDistSrc = join(devtoolsSrc, 'dist');
 if (existsSync(devtoolsDistSrc)) {
   mkdirSync(devtoolsDest, { recursive: true });
-  cpSync(devtoolsDistSrc, join(devtoolsDest, 'dist'), {
-    recursive: true,
-    dereference: true,
-  });
+  const devtoolsDistDest = join(devtoolsDest, 'dist');
+  if (existsSync(devtoolsDistDest)) rmSync(devtoolsDistDest, { recursive: true, force: true });
+  cpSync(devtoolsDistSrc, devtoolsDistDest, { recursive: true, dereference: true });
   copyFileSync(
     join(devtoolsSrc, 'package.json'),
     join(devtoolsDest, 'package.json'),
@@ -101,10 +99,11 @@ const bundleMcpDest = join(bundleDir, 'bundled');
 if (!existsSync(bundleMcpSrc)) {
   console.error(
     `Error: chrome-devtools-mcp bundle not found at ${bundleMcpSrc}.\n` +
-      `Run "npm run bundle:browser-mcp -w @google/gemini-cli-core" first.`,
+      `Run "npm run bundle:browser-mcp -w @sluisr/deepseek-cli-core" first.`,
   );
   process.exit(1);
 }
+if (existsSync(bundleMcpDest)) rmSync(bundleMcpDest, { recursive: true, force: true });
 cpSync(bundleMcpSrc, bundleMcpDest, { recursive: true, dereference: true });
 console.log('Copied bundled chrome-devtools-mcp to bundle/bundled/');
 
@@ -113,10 +112,8 @@ const ripgrepVendorSrc = join(root, 'packages/core/vendor/ripgrep');
 const ripgrepVendorDest = join(bundleDir, 'vendor', 'ripgrep');
 if (existsSync(ripgrepVendorSrc)) {
   mkdirSync(ripgrepVendorDest, { recursive: true });
-  cpSync(ripgrepVendorSrc, ripgrepVendorDest, {
-    recursive: true,
-    dereference: true,
-  });
+  if (existsSync(ripgrepVendorDest)) rmSync(ripgrepVendorDest, { recursive: true, force: true });
+  cpSync(ripgrepVendorSrc, ripgrepVendorDest, { recursive: true, dereference: true });
   console.log('Copied ripgrep vendor binaries to bundle/vendor/ripgrep/');
 }
 
@@ -129,6 +126,7 @@ const extensionExamplesDest = join(bundleDir, 'examples');
 const EXCLUDED_EXAMPLE_DIRS = ['node_modules', 'dist'];
 
 if (existsSync(extensionExamplesSrc)) {
+  if (existsSync(extensionExamplesDest)) rmSync(extensionExamplesDest, { recursive: true, force: true });
   cpSync(extensionExamplesSrc, extensionExamplesDest, {
     recursive: true,
     dereference: true,

@@ -22,7 +22,7 @@ import {
   SettingScope,
   type LoadedSettings,
 } from '../../config/settings.js';
-import { FatalConfigError } from '@google/gemini-cli-core';
+import { FatalConfigError } from '@sluisr/deepseek-cli-core';
 
 // Mock dependencies
 const emitConsoleLog = vi.hoisted(() => vi.fn());
@@ -35,9 +35,9 @@ const debugLogger = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     coreEvents: {

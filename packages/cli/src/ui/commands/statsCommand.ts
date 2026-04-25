@@ -14,7 +14,7 @@ import { formatDuration } from '../utils/formatters.js';
 import {
   UserAccountManager,
   getG1CreditBalance,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   type CommandContext,
   type SlashCommand,

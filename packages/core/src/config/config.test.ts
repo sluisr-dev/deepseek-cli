@@ -1892,7 +1892,7 @@ describe('Server Config (config.ts)', () => {
     const originalImplementation = realpathMock.getMockImplementation();
 
     try {
-      realpathMock.mockImplementation((input) => {
+      realpathMock.mockImplementation((input: any) => {
         const normalizedInput =
           typeof input === 'string' || Buffer.isBuffer(input)
             ? input
@@ -1913,7 +1913,7 @@ describe('Server Config (config.ts)', () => {
 
       expect(() => config.setSessionId('session-two')).not.toThrow();
     } finally {
-      realpathMock.mockImplementation((input) => {
+      realpathMock.mockImplementation((input: any) => {
         if (originalImplementation) {
           return originalImplementation(input);
         }

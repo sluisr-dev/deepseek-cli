@@ -11,7 +11,7 @@ into your terminal. An unofficial adaptation of Google Gemini CLI by [sluisr](ht
 ## 🚀 Why DeepSeek CLI?
 
 - **💰 Pay-per-use**: No daily limits, pay only for tokens used via DeepSeek API.
-- **🧠 DeepSeek Chat model**: Powerful reasoning and long context window.
+- **🧠 DeepSeek V4 models**: Features deepseek-v4-flash and deepseek-v4-pro with a 1M token context window.
 - **🔧 Built-in tools**: File operations, shell commands, web fetching, memory persistence.
 - **🔌 Extensible**: MCP (Model Context Protocol) support for custom integrations.
 - **💻 Terminal-first**: Designed for developers who live in the command line.

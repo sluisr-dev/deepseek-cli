@@ -6,7 +6,7 @@
 
 import { renderWithProviders, cleanup } from '../../test-utils/render.js';
 import { createMockSettings } from '../../test-utils/settings.js';
-import { makeFakeConfig } from '@google/gemini-cli-core';
+import { makeFakeConfig } from '@sluisr/deepseek-cli-core';
 import { waitFor } from '../../test-utils/async.js';
 import { act, useState, useMemo } from 'react';
 import {
@@ -25,7 +25,7 @@ import {
   debugLogger,
   coreEvents,
   type Config,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import * as path from 'node:path';
 import {
   CommandKind,

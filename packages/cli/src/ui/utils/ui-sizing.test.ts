@@ -6,7 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { calculateMainAreaWidth } from './ui-sizing.js';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@sluisr/deepseek-cli-core';
 
 describe('ui-sizing', () => {
   describe('calculateMainAreaWidth', () => {

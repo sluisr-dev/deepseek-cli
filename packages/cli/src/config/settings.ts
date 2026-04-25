@@ -20,7 +20,7 @@ import {
   homedir,
   type AdminControlsSettings,
   createCache,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import stripJsonComments from 'strip-json-comments';
 import { DefaultLight } from '../ui/themes/builtin/light/default-light.js';
 import { DefaultDark } from '../ui/themes/builtin/dark/default-dark.js';

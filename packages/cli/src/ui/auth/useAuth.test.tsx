@@ -12,7 +12,7 @@ import {
   AuthType,
   type Config,
   ProjectIdRequiredError,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { AuthState } from '../types.js';
 import type { LoadedSettings } from '../../config/settings.js';
 
@@ -20,9 +20,9 @@ import type { LoadedSettings } from '../../config/settings.js';
 const mockLoadApiKey = vi.fn();
 const mockValidateAuthMethod = vi.fn();
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     loadApiKey: () => mockLoadApiKey(),

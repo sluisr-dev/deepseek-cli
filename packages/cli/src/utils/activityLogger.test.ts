@@ -6,7 +6,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ActivityLogger, type NetworkLog } from './activityLogger.js';
-import type { ConsoleLogPayload } from '@google/gemini-cli-core';
+import type { ConsoleLogPayload } from '@sluisr/deepseek-cli-core';
 
 describe('ActivityLogger', () => {
   let logger: ActivityLogger;

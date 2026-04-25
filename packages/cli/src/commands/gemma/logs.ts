@@ -7,7 +7,7 @@
 import type { CommandModule } from 'yargs';
 import fs from 'node:fs';
 import { spawn, type ChildProcess } from 'node:child_process';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@sluisr/deepseek-cli-core';
 import { exitCli } from '../utils.js';
 import { getLogFilePath } from './constants.js';
 

@@ -6,7 +6,7 @@
 
 import { renderWithProviders } from '../../test-utils/render.js';
 import { createMockSettings } from '../../test-utils/settings.js';
-import { makeFakeConfig, CoreToolCallStatus } from '@google/gemini-cli-core';
+import { makeFakeConfig, CoreToolCallStatus } from '@sluisr/deepseek-cli-core';
 import { waitFor } from '../../test-utils/async.js';
 import { MainContent } from './MainContent.js';
 import { getToolGroupBorderAppearance } from '../utils/borderStyles.js';
@@ -622,7 +622,7 @@ describe('MainContent', () => {
 
   it('renders a ToolConfirmationQueue without an extra line when preceded by hidden tools', async () => {
     const { ApprovalMode, WRITE_FILE_DISPLAY_NAME } = await import(
-      '@google/gemini-cli-core'
+      '@sluisr/deepseek-cli-core'
     );
     const hiddenToolCalls = [
       {
@@ -692,7 +692,7 @@ describe('MainContent', () => {
 
   it('renders a spurious line when a tool group has only hidden tools and borderBottom true', async () => {
     const { ApprovalMode, WRITE_FILE_DISPLAY_NAME } = await import(
-      '@google/gemini-cli-core'
+      '@sluisr/deepseek-cli-core'
     );
     const uiState = {
       ...defaultMockUiState,

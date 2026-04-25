@@ -10,7 +10,7 @@ import {
   useAlternateBuffer,
   isAlternateBufferEnabled,
 } from './useAlternateBuffer.js';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@sluisr/deepseek-cli-core';
 
 vi.mock('../contexts/ConfigContext.js', () => ({
   useConfig: vi.fn(),

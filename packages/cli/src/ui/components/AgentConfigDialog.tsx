@@ -13,7 +13,7 @@ import {
   type LoadableSettingScope,
   type LoadedSettings,
 } from '../../config/settings.js';
-import type { AgentDefinition, AgentOverride } from '@google/gemini-cli-core';
+import type { AgentDefinition, AgentOverride } from '@sluisr/deepseek-cli-core';
 import { getCachedStringWidth } from '../utils/textUtils.js';
 import {
   BaseSettingsDialog,

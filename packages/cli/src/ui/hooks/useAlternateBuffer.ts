@@ -5,7 +5,7 @@
  */
 
 import { useConfig } from '../contexts/ConfigContext.js';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@sluisr/deepseek-cli-core';
 
 // This method is intentionally misleading while we migrate.
 // Once getUseTerminalBuffer() is always enabled we will refactor to remove

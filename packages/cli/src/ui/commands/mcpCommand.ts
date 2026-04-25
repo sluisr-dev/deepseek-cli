@@ -10,7 +10,7 @@ import type {
   CommandContext,
 } from './types.js';
 import { CommandKind } from './types.js';
-import type { MessageActionReturn } from '@google/gemini-cli-core';
+import type { MessageActionReturn } from '@sluisr/deepseek-cli-core';
 import {
   DiscoveredMCPTool,
   getMCPDiscoveryState,
@@ -22,7 +22,7 @@ import {
   mcpServerRequiresOAuth,
   CoreEvent,
   coreEvents,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 import { MessageType, type HistoryItemMcpStatus } from '../types.js';
 import {
@@ -113,7 +113,7 @@ const authCommand: SlashCommand = {
       });
 
       // Import dynamically to avoid circular dependencies
-      const { MCPOAuthProvider } = await import('@google/gemini-cli-core');
+      const { MCPOAuthProvider } = await import('@sluisr/deepseek-cli-core');
 
       let oauthConfig = server.oauth;
       if (!oauthConfig) {

@@ -24,7 +24,7 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     alias: {
-      '@google/gemini-cli-core': path.resolve(
+      '@sluisr/deepseek-cli-core': path.resolve(
         __dirname,
         '../packages/core/index.ts',
       ),

@@ -46,7 +46,7 @@ const cliPkg = readJson(cliPkgPath);
 
 cliPkg.files = ['bundle/'];
 cliPkg.bin = {
-  gemini: 'bundle/gemini.js',
+  deepseek: 'bundle/deepseek.js',
 };
 
 delete cliPkg.dependencies;

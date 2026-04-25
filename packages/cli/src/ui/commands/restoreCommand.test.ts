@@ -15,7 +15,7 @@ import {
   GEMINI_DIR,
   type Config,
   type GitService,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 describe('restoreCommand', () => {
   let mockContext: CommandContext;

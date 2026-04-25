@@ -10,7 +10,7 @@ import {
   type Config,
   type ResumedSessionData,
   convertSessionToClientHistory,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import type { Part } from '@google/genai';
 import type { HistoryItemWithoutId } from '../types.js';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';

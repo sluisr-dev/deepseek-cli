@@ -12,7 +12,7 @@ import {
   getCompatibilityWarnings,
   WarningPriority,
   type StartupWarning,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import type { Settings } from '../config/settingsSchema.js';
 import {
   isFolderTrustEnabled,

@@ -18,8 +18,8 @@ import type {
   ModelMetrics,
   RoleMetrics,
   ToolCallStats,
-} from '@google/gemini-cli-core';
-import { uiTelemetryService } from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
+import { uiTelemetryService } from '@sluisr/deepseek-cli-core';
 
 export enum ToolCallDecision {
   ACCEPT = 'accept',

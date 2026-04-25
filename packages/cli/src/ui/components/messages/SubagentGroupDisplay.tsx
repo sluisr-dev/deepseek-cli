@@ -13,7 +13,7 @@ import {
   isSubagentProgress,
   checkExhaustive,
   type SubagentActivityItem,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   SubagentProgressDisplay,
   formatToolArgs,

@@ -18,7 +18,7 @@ import {
   SESSION_FILE_PREFIX,
   PREVIEW_GEMINI_FLASH_MODEL,
   getErrorMessage,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 export * from '@google/gemini-cli-test-utils';
 

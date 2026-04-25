@@ -17,7 +17,7 @@ import {
   type AnsiLine,
   isSubagentProgress,
   isStructuredToolResult,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { useUIState } from '../../contexts/UIStateContext.js';
 import { tryParseJSON } from '../../../utils/jsonoutput.js';
 import { useAlternateBuffer } from '../../hooks/useAlternateBuffer.js';

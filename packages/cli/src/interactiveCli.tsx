@@ -29,7 +29,7 @@ import {
   writeToStdout,
   getVersion,
   debugLogger,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import type { InitializationResult } from './core/initializer.js';
 import type { LoadedSettings } from './config/settings.js';
 

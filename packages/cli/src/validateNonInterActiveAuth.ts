@@ -11,7 +11,7 @@ import {
   getAuthTypeFromEnv,
   type Config,
   AuthType,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { USER_SETTINGS_PATH, type LoadedSettings } from './config/settings.js';
 import { validateAuthMethod } from './config/auth.js';
 import { handleError } from './utils/errors.js';

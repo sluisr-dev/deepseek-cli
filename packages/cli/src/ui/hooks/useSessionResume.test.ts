@@ -13,7 +13,7 @@ import type {
   ResumedSessionData,
   ConversationRecord,
   MessageRecord,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import type { HistoryItemWithoutId } from '../types.js';
 

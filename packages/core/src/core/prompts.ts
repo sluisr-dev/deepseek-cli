@@ -11,7 +11,7 @@ import { resolvePathFromEnv as resolvePathFromEnvImpl } from '../prompts/utils.j
 
 /**
  * Resolves a path or switch value from an environment variable.
- * @deprecated Use resolvePathFromEnv from @google/gemini-cli-core/prompts/utils instead.
+ * @deprecated Use resolvePathFromEnv from @sluisr/deepseek-cli-core/prompts/utils instead.
  */
 export function resolvePathFromEnv(envVar?: string) {
   return resolvePathFromEnvImpl(envVar);

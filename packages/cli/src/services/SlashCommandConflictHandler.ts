@@ -9,7 +9,7 @@ import {
   CoreEvent,
   type SlashCommandConflictsPayload,
   type SlashCommandConflict,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { CommandKind } from '../ui/commands/types.js';
 
 /**

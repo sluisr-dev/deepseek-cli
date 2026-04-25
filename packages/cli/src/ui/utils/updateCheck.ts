@@ -6,7 +6,7 @@
 
 import latestVersion from 'latest-version';
 import semver from 'semver';
-import { getPackageJson, debugLogger } from '@google/gemini-cli-core';
+import { getPackageJson, debugLogger } from '@sluisr/deepseek-cli-core';
 import type { LoadedSettings } from '../../config/settings.js';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -64,13 +64,14 @@ export async function checkForUpdates(
       return null;
     }
 
-    const { name, version: currentVersion } = packageJson;
+    const { version: currentVersion } = packageJson;
+    const name = '@sluisr/deepseek-cli';
     const isNightly = currentVersion.includes('nightly');
 
     if (isNightly) {
       const [nightlyUpdate, latestUpdate] = await Promise.all([
-        latestVersion(name, { version: 'nightly' }),
-        latestVersion(name),
+        latestVersion(name, { version: 'nightly' }).catch(() => null),
+        latestVersion(name).catch(() => null),
       ]);
 
       const bestUpdate = getBestAvailableUpdate(nightlyUpdate, latestUpdate);
@@ -89,7 +90,7 @@ export async function checkForUpdates(
         };
       }
     } else {
-      const latestUpdate = await latestVersion(name);
+      const latestUpdate = await latestVersion(name).catch(() => null);
 
       if (latestUpdate && semver.gt(latestUpdate, currentVersion)) {
         const message = `DeepSeek CLI update available! ${currentVersion} → ${latestUpdate}`;

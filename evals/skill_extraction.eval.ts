@@ -13,7 +13,7 @@ import {
   SESSION_FILE_PREFIX,
   getProjectHash,
   startMemoryService,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { componentEvalTest } from './component-test-helper.js';
 
 interface SeedSession {

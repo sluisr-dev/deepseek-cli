@@ -55,7 +55,7 @@ import {
   coreEvents,
   debugLogger,
   type Config,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   parseInputForHighlighting,
   parseSegmentsFromTokens,

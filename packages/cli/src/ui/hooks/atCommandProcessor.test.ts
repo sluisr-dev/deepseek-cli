@@ -31,8 +31,8 @@ import {
   CoreToolCallStatus,
   type Config,
   type DiscoveredMCPResource,
-} from '@google/gemini-cli-core';
-import * as core from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
+import * as core from '@sluisr/deepseek-cli-core';
 import * as os from 'node:os';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 import * as fsPromises from 'node:fs/promises';

@@ -41,7 +41,7 @@ import {
   getTransformedImagePath,
 } from './text-buffer.js';
 import { cpLen } from '../../utils/textUtils.js';
-import { escapePath } from '@google/gemini-cli-core';
+import { escapePath } from '@sluisr/deepseek-cli-core';
 
 const defaultVisualLayout: VisualLayout = {
   visualLines: [''],

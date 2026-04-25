@@ -9,7 +9,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { StatsDisplay } from './StatsDisplay.js';
 import * as SessionContext from '../contexts/SessionContext.js';
 import { type SessionMetrics } from '../contexts/SessionContext.js';
-import { ToolCallDecision, LlmRole } from '@google/gemini-cli-core';
+import { ToolCallDecision, LlmRole } from '@sluisr/deepseek-cli-core';
 
 // Mock the context to provide controlled data for testing
 vi.mock('../contexts/SessionContext.js', async (importOriginal) => {

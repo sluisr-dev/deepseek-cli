@@ -14,8 +14,8 @@ import { CommandKind } from './types.js';
 import type {
   HookRegistryEntry,
   MessageActionReturn,
-} from '@google/gemini-cli-core';
-import { getErrorMessage } from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
+import { getErrorMessage } from '@sluisr/deepseek-cli-core';
 import { SettingScope, isLoadableSettingScope } from '../../config/settings.js';
 import { enableHook, disableHook } from '../../utils/hookSettings.js';
 import { renderHookActionFeedback } from '../../utils/hookUtils.js';

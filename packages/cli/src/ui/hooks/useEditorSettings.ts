@@ -10,14 +10,14 @@ import type {
   LoadedSettings,
 } from '../../config/settings.js';
 import { MessageType } from '../types.js';
-import type { EditorType } from '@google/gemini-cli-core';
+import type { EditorType } from '@sluisr/deepseek-cli-core';
 import {
   allowEditorTypeInSandbox,
   hasValidEditorCommand,
   getEditorDisplayName,
   coreEvents,
   CoreEvent,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import type { UseHistoryManagerReturn } from './useHistoryManager.js';
 
 import { SettingPaths } from '../../config/settingPaths.js';

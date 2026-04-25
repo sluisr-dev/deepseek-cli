@@ -19,12 +19,12 @@ import {
   type MessageRecord,
   CoreToolCallStatus,
   loadConversationRecord,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   coreEvents,
   convertSessionToClientHistory,
   uiTelemetryService,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 // Mock modules
 vi.mock('fs/promises');
@@ -37,9 +37,9 @@ vi.mock('../../utils/sessionUtils.js', async (importOriginal) => {
     getSessionFiles: vi.fn(),
   };
 });
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     uiTelemetryService: {

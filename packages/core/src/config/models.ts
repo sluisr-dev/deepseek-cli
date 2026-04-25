@@ -61,8 +61,8 @@ export const DEFAULT_GEMINI_MODEL = 'gemini-2.5-pro';
 export const DEFAULT_GEMINI_FLASH_MODEL = 'gemini-2.5-flash';
 export const DEFAULT_GEMINI_FLASH_LITE_MODEL = 'gemini-2.5-flash-lite';
 
-export const DEEPSEEK_CHAT_MODEL = 'deepseek-chat';
-export const DEEPSEEK_REASONER_MODEL = 'deepseek-reasoner';
+export const DEEPSEEK_CHAT_MODEL = 'deepseek-v4-flash';
+export const DEEPSEEK_REASONER_MODEL = 'deepseek-v4-pro';
 
 export const VALID_GEMINI_MODELS = new Set([
   PREVIEW_GEMINI_MODEL,

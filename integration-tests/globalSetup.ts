@@ -13,7 +13,7 @@ import { mkdir, readdir, rm, readFile } from 'node:fs/promises';
 import { join, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { canUseRipgrep } from '../packages/core/src/tools/ripGrep.js';
-import { disableMouseTracking } from '@google/gemini-cli-core';
+import { disableMouseTracking } from '@sluisr/deepseek-cli-core';
 import { isolateTestEnv } from '../packages/test-utils/src/env-setup.js';
 import { createServer, type Server } from 'node:http';
 

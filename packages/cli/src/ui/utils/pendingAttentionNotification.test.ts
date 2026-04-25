@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { CoreToolCallStatus } from '@google/gemini-cli-core';
+import { CoreToolCallStatus } from '@sluisr/deepseek-cli-core';
 import { getPendingAttentionNotification } from './pendingAttentionNotification.js';
 
 describe('getPendingAttentionNotification', () => {

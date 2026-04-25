@@ -18,7 +18,7 @@ import { useUIState, type UIState } from '../contexts/UIStateContext.js';
 import { useIsScreenReaderEnabled } from 'ink';
 import * as fs from 'node:fs/promises';
 import { act } from 'react';
-import { WarningPriority } from '@google/gemini-cli-core';
+import { WarningPriority } from '@sluisr/deepseek-cli-core';
 
 // Mock dependencies
 vi.mock('../contexts/AppContext.js');
@@ -60,9 +60,9 @@ vi.mock('node:path', async () => {
   };
 });
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   const MockStorage = vi.fn().mockImplementation(() => ({
     getExtensionsDir: () => '/mock/home/.gemini/extensions',
   }));

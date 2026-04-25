@@ -52,14 +52,14 @@ vi.mock('../ui/commands/permissionsCommand.js', async () => {
 
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { BuiltinCommandLoader } from './BuiltinCommandLoader.js';
-import { isNightly, type Config } from '@google/gemini-cli-core';
+import { isNightly, type Config } from '@sluisr/deepseek-cli-core';
 import { CommandKind } from '../ui/commands/types.js';
 
 import { restoreCommand } from '../ui/commands/restoreCommand.js';
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     isNightly: vi.fn().mockResolvedValue(false),
@@ -183,7 +183,7 @@ describe('BuiltinCommandLoader', () => {
   });
 
   it('should include upgrade command when authType is login_with_google', async () => {
-    const { AuthType } = await import('@google/gemini-cli-core');
+    const { AuthType } = await import('@sluisr/deepseek-cli-core');
     (mockConfig.getContentGeneratorConfig as Mock).mockReturnValue({
       authType: AuthType.LOGIN_WITH_GOOGLE,
     });

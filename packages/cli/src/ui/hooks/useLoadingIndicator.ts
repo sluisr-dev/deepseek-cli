@@ -11,7 +11,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   getDisplayString,
   type RetryAttemptPayload,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 const LOW_VERBOSITY_RETRY_HINT_ATTEMPT_THRESHOLD = 2;
 

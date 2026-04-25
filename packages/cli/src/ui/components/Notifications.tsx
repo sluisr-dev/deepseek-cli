@@ -20,7 +20,7 @@ import {
   Storage,
   homedir,
   WarningPriority,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 import * as fs from 'node:fs/promises';
 import path from 'node:path';

@@ -55,7 +55,7 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     if (model && model.startsWith('deepseek-')) {
       return model;
     }
-    return 'deepseek-chat';
+    return 'deepseek-v4-flash';
   }
 
   private mapGoogleToDeepSeek(request: GenerateContentParameters): any {
@@ -144,13 +144,21 @@ export class DeepSeekContentGenerator implements ContentGenerator {
               if (text) messages.push({ role: 'user', content: text });
             }
           } else {
+            // Before adding a user message, flush any unanswered tool_calls with
+            // synthetic cancellation responses so DeepSeek doesn't reject the request.
+            for (const pending of pendingCalls.splice(0)) {
+              messages.push({
+                role: 'tool',
+                tool_call_id: pending.id,
+                content: 'Tool call was cancelled by the user.',
+              });
+            }
             messages.push({ role: 'user', content: textParts.map((p: any) => p.text).join('') });
           }
         }
       }
 
-      // If any tool_calls were never answered (e.g. user cancelled), add synthetic
-      // cancellation responses so DeepSeek doesn't reject the request with 400.
+      // Flush any remaining unanswered tool_calls at the end (safety net)
       for (const pending of pendingCalls) {
         messages.push({
           role: 'tool',

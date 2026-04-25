@@ -21,7 +21,7 @@ import {
   type AgentProtocol,
   type Logger,
   type Part,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import type {
   HistoryItemWithoutId,
   LoopDetectionConfirmationRequest,

@@ -18,7 +18,7 @@ import { MessageType, type HistoryItem } from '../types.js';
 import {
   refreshServerHierarchicalMemory,
   type Config,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   expandHomeDir,
   getDirectorySuggestions,

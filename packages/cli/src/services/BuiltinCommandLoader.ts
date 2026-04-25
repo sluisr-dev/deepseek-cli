@@ -11,13 +11,13 @@ import {
   type SlashCommand,
   type CommandContext,
 } from '../ui/commands/types.js';
-import type { MessageActionReturn, Config } from '@google/gemini-cli-core';
+import type { MessageActionReturn, Config } from '@sluisr/deepseek-cli-core';
 import {
   isNightly,
   startupProfiler,
   getAdminErrorMessage,
   AuthType,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { aboutCommand } from '../ui/commands/aboutCommand.js';
 import { agentsCommand } from '../ui/commands/agentsCommand.js';
 import { authCommand } from '../ui/commands/authCommand.js';

@@ -6,9 +6,9 @@
 
 import { vi, describe, expect, it, beforeEach, afterEach } from 'vitest';
 import { readStdin } from './readStdin.js';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@sluisr/deepseek-cli-core';
 
-vi.mock('@google/gemini-cli-core', () => ({
+vi.mock('@sluisr/deepseek-cli-core', () => ({
   debugLogger: {
     warn: vi.fn(),
   },

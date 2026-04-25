@@ -1,6 +1,6 @@
 {
-  "name": "@google/gemini-cli",
-  "version": "0.40.0-nightly.20260414.g5b1f7375a",
+  "name": "@sluisr/deepseek-cli",
+  "version": "1.0.9",
   "engines": {
     "node": ">=20.0.0"
   },
@@ -8,10 +8,11 @@
   "workspaces": [
     "packages/*"
   ],
-  "private": "true",
+  "description": "DeepSeek CLI — unofficial adaptation of Gemini CLI by sluisr",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/google-gemini/gemini-cli.git"
+    "url": "git+https://github.com/sluisr-dev/deepseek-cli.git"
   },
   "config": {
     "sandboxImageUri": "us-docker.pkg.dev/gemini-code-dev/gemini-cli/sandbox:0.40.0-nightly.20260414.g5b1f7375a"
@@ -39,7 +40,7 @@
     "build:packages": "npm run build --workspaces",
     "build:sandbox": "node scripts/build_sandbox.js",
     "build:binary": "node scripts/build_binary.js",
-    "bundle": "npm run generate && npm run build --workspace=@google/gemini-cli-devtools && npm run bundle:browser-mcp -w @google/gemini-cli-core && node esbuild.config.js && node scripts/copy_bundle_assets.js",
+    "bundle": "npm run generate && npm run build --workspace=@google/gemini-cli-devtools && npm run bundle:browser-mcp -w @sluisr/deepseek-cli-core && node esbuild.config.js && node scripts/copy_bundle_assets.js",
     "test": "npm run test --workspaces --if-present && npm run test:sea-launch",
     "test:ci": "npm run test:ci --workspaces --if-present && npm run test:scripts && npm run test:sea-launch",
     "test:scripts": "vitest run --config ./scripts/tests/vitest.config.ts",
@@ -85,7 +86,7 @@
     "minimatch": "^10.2.2"
   },
   "bin": {
-    "gemini": "bundle/gemini.js"
+    "deepseek": "bundle/deepseek.js"
   },
   "files": [
     "bundle/",

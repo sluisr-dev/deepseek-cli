@@ -11,12 +11,12 @@ import {
   CoreEvent,
   type SlashCommandConflictsPayload,
   type SlashCommandConflict,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { CommandKind } from '../ui/commands/types.js';
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     coreEvents: {

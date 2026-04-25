@@ -47,7 +47,7 @@ import {
   type OutputFormat,
   detectIdeFromEnv,
   generalistProfile,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   type Settings,
   type MergedSettings,
@@ -68,7 +68,7 @@ import {
 } from './policy.js';
 import { ExtensionManager } from './extension-manager.js';
 import { McpServerEnablementManager } from './mcp/mcpServerEnablement.js';
-import type { ExtensionEvents } from '@google/gemini-cli-core/src/utils/extensionLoader.js';
+import type { ExtensionEvents } from '@sluisr/deepseek-cli-core/src/utils/extensionLoader.js';
 import { requestConsentNonInteractive } from './extensions/consent.js';
 import { promptForSetting } from './extensions/extensionSettings.js';
 import type { EventEmitter } from 'node:stream';

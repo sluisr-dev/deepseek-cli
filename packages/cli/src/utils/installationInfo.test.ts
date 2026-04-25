@@ -9,11 +9,11 @@ import { getInstallationInfo, PackageManager } from './installationInfo.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as childProcess from 'node:child_process';
-import { isGitRepository, debugLogger } from '@google/gemini-cli-core';
+import { isGitRepository, debugLogger } from '@sluisr/deepseek-cli-core';
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     isGitRepository: vi.fn(),

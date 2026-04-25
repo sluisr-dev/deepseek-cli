@@ -8,12 +8,12 @@ import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { renderWithProviders } from '../test-utils/render.js';
 import { act } from 'react';
 import { IdeIntegrationNudge } from './IdeIntegrationNudge.js';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@sluisr/deepseek-cli-core';
 
 // Mock debugLogger
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     debugLogger: {

@@ -13,7 +13,7 @@ import {
   spawnAsync,
   escapePath,
   Storage,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 /**
  * Supported image file extensions based on Gemini API.

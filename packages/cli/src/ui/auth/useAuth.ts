@@ -14,8 +14,8 @@ import {
   debugLogger,
   isAccountSuspendedError,
   ProjectIdRequiredError,
-} from '@google/gemini-cli-core';
-import { getErrorMessage } from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
+import { getErrorMessage } from '@sluisr/deepseek-cli-core';
 import { AuthState } from '../types.js';
 import { validateAuthMethod } from '../../config/auth.js';
 

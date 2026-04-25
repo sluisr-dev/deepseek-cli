@@ -20,7 +20,7 @@ import {
   isHeadlessMode,
   FolderTrustDiscoveryService,
   type FolderDiscoveryResults,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { runExitCleanup } from '../../utils/cleanup.js';
 
 export const useFolderTrust = (

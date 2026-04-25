@@ -9,7 +9,7 @@ import { TestRig } from './test-helper.js';
 import { TestMcpServer } from './test-mcp-server.js';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { safeJsonStringify } from '@google/gemini-cli-core/src/utils/safeJsonStringify.js';
+import { safeJsonStringify } from '@sluisr/deepseek-cli-core/src/utils/safeJsonStringify.js';
 
 import stripAnsi from 'strip-ansi';
 

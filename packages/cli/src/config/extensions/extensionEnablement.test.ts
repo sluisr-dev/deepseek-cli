@@ -18,7 +18,7 @@ import {
   coreEvents,
   GEMINI_DIR,
   type GeminiCLIExtension,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 vi.mock('node:os', () => ({
   homedir: vi.fn().mockReturnValue('/virtual-home'),

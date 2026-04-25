@@ -80,7 +80,7 @@ function generateTestCommand(failedFilesMap) {
     let workspace = '@google/gemini-cli';
     let relPath = file;
     if (file.startsWith('packages/core/')) {
-      workspace = '@google/gemini-cli-core';
+      workspace = '@sluisr/deepseek-cli-core';
       relPath = file.replace('packages/core/', '');
     } else if (file.startsWith('packages/cli/')) {
       workspace = '@google/gemini-cli';

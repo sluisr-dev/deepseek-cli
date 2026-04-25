@@ -13,13 +13,13 @@ import { createTestMergedSettings } from './settings.js';
 import {
   loadAgentsFromDirectory,
   loadSkillsFromDir,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 let currentTempHome = '';
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     homedir: () => currentTempHome,

@@ -11,7 +11,7 @@ import { useRewind } from './useRewind.js';
 import type {
   ConversationRecord,
   MessageRecord,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import type { FileChangeStats } from '../utils/rewindFileOps.js';
 import * as rewindFileOps from '../utils/rewindFileOps.js';
 

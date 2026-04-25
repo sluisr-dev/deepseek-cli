@@ -5,17 +5,17 @@
  */
 
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { coreEvents, getErrorMessage } from '@google/gemini-cli-core';
+import { coreEvents, getErrorMessage } from '@sluisr/deepseek-cli-core';
 import { handleList, listCommand } from './list.js';
 import { ExtensionManager } from '../../config/extension-manager.js';
 import { loadSettings, type LoadedSettings } from '../../config/settings.js';
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const { mockCoreDebugLogger } = await import(
     '../../test-utils/mockDebugLogger.js'
   );
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   const mocked = mockCoreDebugLogger(actual, { stripAnsi: false });
   return { ...mocked, getErrorMessage: vi.fn() };
 });

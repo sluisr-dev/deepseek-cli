@@ -18,7 +18,7 @@ import {
   type Config,
   type ToolResultDisplay,
   CoreToolCallStatus,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 vi.mock('../GeminiRespondingSpinner.js', () => ({
   GeminiRespondingSpinner: () => null,

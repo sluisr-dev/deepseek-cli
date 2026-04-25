@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@sluisr/deepseek-cli-core';
 import { isAlternateBufferEnabled } from '../hooks/useAlternateBuffer.js';
 
 export const calculateMainAreaWidth = (

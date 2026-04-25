@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { listExtensions } from '@google/gemini-cli-core';
+import { listExtensions } from '@sluisr/deepseek-cli-core';
 import type {
   Command,
   CommandContext,

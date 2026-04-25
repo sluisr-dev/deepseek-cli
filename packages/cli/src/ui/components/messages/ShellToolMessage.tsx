@@ -28,7 +28,7 @@ import {
   type Config,
   ShellExecutionService,
   CoreToolCallStatus,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   calculateShellMaxLines,
   calculateToolContentMaxLines,

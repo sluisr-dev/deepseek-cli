@@ -36,7 +36,7 @@ import {
   type SettingsValue,
   TOGGLE_TYPES,
 } from '../../config/settingsSchema.js';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@sluisr/deepseek-cli-core';
 
 import { useSearchBuffer } from '../hooks/useSearchBuffer.js';
 import {

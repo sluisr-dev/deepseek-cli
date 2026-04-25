@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { type Config } from '@google/gemini-cli-core';
+import { type Config } from '@sluisr/deepseek-cli-core';
 import { Box, Text } from 'ink';
 import { theme } from '../semantic-colors.js';
 import { useKeypress } from '../hooks/useKeypress.js';

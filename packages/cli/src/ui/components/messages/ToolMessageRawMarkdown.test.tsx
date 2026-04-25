@@ -10,7 +10,7 @@ import { StreamingState } from '../../types.js';
 import { StreamingContext } from '../../contexts/StreamingContext.js';
 import { renderWithProviders } from '../../../test-utils/render.js';
 import { createMockSettings } from '../../../test-utils/settings.js';
-import { CoreToolCallStatus, makeFakeConfig } from '@google/gemini-cli-core';
+import { CoreToolCallStatus, makeFakeConfig } from '@sluisr/deepseek-cli-core';
 
 describe('<ToolMessage /> - Raw Markdown Display Snapshots', () => {
   const baseProps: ToolMessageProps = {

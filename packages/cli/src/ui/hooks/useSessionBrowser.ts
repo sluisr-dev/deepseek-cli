@@ -14,7 +14,7 @@ import {
   loadConversationRecord,
   type Config,
   type ResumedSessionData,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   convertSessionToHistoryFormats,
   type SessionInfo,

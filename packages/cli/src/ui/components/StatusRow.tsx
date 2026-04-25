@@ -10,7 +10,7 @@ import { Box, Text, ResizeObserver, type DOMElement } from 'ink';
 import {
   isUserVisibleHook,
   type ThoughtSummary,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import stripAnsi from 'strip-ansi';
 import { type ActiveHook } from '../types.js';
 import { useUIState } from '../contexts/UIStateContext.js';

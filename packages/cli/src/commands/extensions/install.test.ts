@@ -15,7 +15,7 @@ import {
 } from 'vitest';
 import { handleInstall, installCommand } from './install.js';
 import yargs from 'yargs';
-import * as core from '@google/gemini-cli-core';
+import * as core from '@sluisr/deepseek-cli-core';
 import type { Stats } from 'node:fs';
 import * as path from 'node:path';
 import { promptForSetting } from '../../config/extensions/extensionSettings.js';
@@ -67,9 +67,9 @@ vi.mock('../../config/trustedFolders.js', () => ({
   },
 }));
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...actual,
     FolderTrustDiscoveryService: {

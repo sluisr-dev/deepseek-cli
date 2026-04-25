@@ -5,7 +5,7 @@
  */
 
 import { MemoryCommand } from './memory.js';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@sluisr/deepseek-cli-core';
 import { ExtensionsCommand } from './extensions.js';
 import { InitCommand } from './init.js';
 import { RestoreCommand } from './restore.js';

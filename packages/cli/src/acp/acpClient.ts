@@ -52,7 +52,7 @@ import {
   InvalidStreamError,
   type AgentLoopContext,
   updatePolicy,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import * as acp from '@agentclientprotocol/sdk';
 import { AcpFileSystemService } from './fileSystemService.js';
 import { getAcpErrorMessage } from './acpErrors.js';

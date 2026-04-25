@@ -12,7 +12,7 @@ import {
   spawnAsync,
   LlmRole,
   type Config,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { useKeypress } from '../../hooks/useKeypress.js';
 import { Command } from '../../key/keyMatchers.js';
 import { TextInput } from '../shared/TextInput.js';

@@ -145,7 +145,7 @@ async function run() {
     // Now we can safely import everything.
     const { main } = await import('./src/gemini.js');
     const { FatalError, writeToStderr } = await import(
-      '@google/gemini-cli-core'
+      '@sluisr/deepseek-cli-core'
     );
     const { runExitCleanup } = await import('./src/utils/cleanup.js');
 

@@ -7,7 +7,7 @@
 import type { CommandModule } from 'yargs';
 import fs from 'node:fs';
 import chalk from 'chalk';
-import { debugLogger } from '@google/gemini-cli-core';
+import { debugLogger } from '@sluisr/deepseek-cli-core';
 import { exitCli } from '../utils.js';
 import { DEFAULT_PORT, getPidFilePath } from './constants.js';
 import {

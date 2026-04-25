@@ -9,14 +9,14 @@ import {
   ApprovalMode,
   PolicyDecision,
   PolicyEngine,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { createPolicyEngineConfig } from './policy.js';
 import type { Settings } from './settings.js';
 
 // Mock Storage to ensure tests are hermetic and don't read from user's home directory
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   const Storage = actual.Storage;
   // Monkey-patch static methods
   Storage.getUserPoliciesDir = () => '/non-existent/user/policies';

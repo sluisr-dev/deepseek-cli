@@ -16,7 +16,7 @@ import {
   getErrorMessage,
   type GeminiCLIExtension,
   IntegrityDataStatus,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import * as fs from 'node:fs';
 import { copyExtension, type ExtensionManager } from '../extension-manager.js';
 import { ExtensionStorage } from './storage.js';

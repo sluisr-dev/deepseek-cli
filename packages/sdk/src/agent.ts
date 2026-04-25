@@ -11,7 +11,7 @@ import {
   type ResumedSessionData,
   type ConversationRecord,
   loadConversationRecord,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 
 import { GeminiCliSession } from './session.js';
 import type { GeminiCliAgentOptions } from './types.js';

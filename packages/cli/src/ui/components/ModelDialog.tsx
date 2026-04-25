@@ -27,7 +27,7 @@ import {
   isProModel,
   DEEPSEEK_CHAT_MODEL,
   DEEPSEEK_REASONER_MODEL,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { useKeypress } from '../hooks/useKeypress.js';
 import { theme } from '../semantic-colors.js';
 import { DescriptiveRadioButtonSelect } from './shared/DescriptiveRadioButtonSelect.js';
@@ -129,14 +129,14 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
       return [
         {
           value: DEEPSEEK_CHAT_MODEL,
-          title: DEEPSEEK_CHAT_MODEL,
-          description: 'General-purpose model — fast and capable',
+          title: 'DeepSeek-V4-Flash',
+          description: 'Fast, efficient, and economical choice (1M context)',
           key: DEEPSEEK_CHAT_MODEL,
         },
         {
           value: DEEPSEEK_REASONER_MODEL,
-          title: DEEPSEEK_REASONER_MODEL,
-          description: 'Reasoning model — best for complex tasks (slower)',
+          title: 'DeepSeek-V4-Pro',
+          description: 'Performance rivaling top closed-source models (1M context)',
           key: DEEPSEEK_REASONER_MODEL,
         },
       ];

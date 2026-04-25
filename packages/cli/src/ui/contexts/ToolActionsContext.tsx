@@ -20,7 +20,7 @@ import {
   type ToolConfirmationPayload,
   type SerializableConfirmationDetails,
   debugLogger,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import type { IndividualToolCallDisplay } from '../types.js';
 
 type LegacyConfirmationDetails = SerializableConfirmationDetails & {

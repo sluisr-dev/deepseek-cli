@@ -100,13 +100,13 @@ execSync(
   },
 );
 
-console.log('packing @google/gemini-cli-core ...');
+console.log('packing @sluisr/deepseek-cli-core ...');
 const corePackageDir = join('packages', 'core');
 rmSync(join(corePackageDir, 'dist', 'google-gemini-cli-core-*.tgz'), {
   force: true,
 });
 execSync(
-  `npm pack -w @google/gemini-cli-core --pack-destination ./packages/core/dist`,
+  `npm pack -w @sluisr/deepseek-cli-core --pack-destination ./packages/core/dist`,
   { stdio: 'ignore' },
 );
 

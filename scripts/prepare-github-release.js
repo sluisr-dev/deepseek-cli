@@ -60,7 +60,7 @@ updatePackageJson('packages/a2a-server/package.json', (pkg) => {
   pkg.name = '@google-gemini/gemini-cli-a2a-server';
 });
 
-// Update @google/gemini-cli-core
+// Update @sluisr/deepseek-cli-core
 updatePackageJson('packages/core/package.json', (pkg) => {
   pkg.name = '@google-gemini/gemini-cli-core';
 });

@@ -12,7 +12,7 @@ import {
   debugLogger,
   FatalConfigError,
   getErrorMessage,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import { promptForSetting } from '../../config/extensions/extensionSettings.js';
 import { exitCli } from '../utils.js';
 import { McpServerEnablementManager } from '../../config/mcp/mcpServerEnablement.js';

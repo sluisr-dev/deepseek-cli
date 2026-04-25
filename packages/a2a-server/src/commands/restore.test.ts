@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { RestoreCommand, ListCheckpointsCommand } from './restore.js';
 import type { CommandContext } from './types.js';
-import type { Config } from '@google/gemini-cli-core';
+import type { Config } from '@sluisr/deepseek-cli-core';
 import { createMockConfig } from '../utils/testing_utils.js';
 
 beforeEach(() => {
@@ -18,9 +18,9 @@ const mockPerformRestore = vi.hoisted(() => vi.fn());
 const mockLoggerInfo = vi.hoisted(() => vi.fn());
 const mockGetCheckpointInfoList = vi.hoisted(() => vi.fn());
 
-vi.mock('@google/gemini-cli-core', async (importOriginal) => {
+vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
   const original =
-    await importOriginal<typeof import('@google/gemini-cli-core')>();
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...original,
     performRestore: mockPerformRestore,

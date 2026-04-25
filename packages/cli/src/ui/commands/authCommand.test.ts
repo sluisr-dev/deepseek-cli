@@ -9,10 +9,10 @@ import { authCommand } from './authCommand.js';
 import { type CommandContext } from './types.js';
 import { createMockCommandContext } from '../../test-utils/mockCommandContext.js';
 import { SettingScope } from '../../config/settings.js';
-import type { GeminiClient } from '@google/gemini-cli-core';
+import type { GeminiClient } from '@sluisr/deepseek-cli-core';
 
-vi.mock('@google/gemini-cli-core', async () => {
-  const actual = await vi.importActual('@google/gemini-cli-core');
+vi.mock('@sluisr/deepseek-cli-core', async () => {
+  const actual = await vi.importActual('@sluisr/deepseek-cli-core');
   return {
     ...actual,
     clearCachedCredentialFile: vi.fn().mockResolvedValue(undefined),
@@ -79,7 +79,7 @@ describe('authCommand', () => {
       expect(logoutCommand?.name).toBe('signout');
 
       const { clearCachedCredentialFile } = await import(
-        '@google/gemini-cli-core'
+        '@sluisr/deepseek-cli-core'
       );
 
       await logoutCommand!.action!(mockContext, '');

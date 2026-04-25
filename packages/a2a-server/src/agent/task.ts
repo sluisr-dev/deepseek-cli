@@ -37,7 +37,7 @@ import {
   processRestorableToolCalls,
   MessageBusType,
   type ToolCallsUpdateMessage,
-} from '@google/gemini-cli-core';
+} from '@sluisr/deepseek-cli-core';
 import {
   type ExecutionEventBus,
   type RequestContext,
