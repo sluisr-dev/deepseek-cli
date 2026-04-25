@@ -60,7 +60,7 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     if (model && model.startsWith('deepseek-')) {
       return model;
     }
-    return 'deepseek-v4-flash';
+    return 'deepseek-chat';
   }
 
   private mapGoogleToDeepSeek(request: GenerateContentParameters): any {
@@ -116,15 +116,24 @@ export class DeepSeekContentGenerator implements ContentGenerator {
 
         if (role === 'model') {
           const fnCallParts = parts.filter((p: any) => p.functionCall);
-          const textParts = parts.filter((p: any) => p.text && !p.thought);
-          const thoughtParts = parts.filter((p: any) => p.thought);
+          const thoughtParts = parts.filter(
+            (p: any) => p.thought || p.type === 'thought',
+          );
+          const textParts = parts.filter(
+            (p: any) => p.text && !p.thought && p.type !== 'thought',
+          );
 
           const reasoning_content =
             thoughtParts
-              .map((p: any) =>
-                typeof p.thought === 'string' ? p.thought : p.text,
-              )
+              .map((p: any) => {
+                if (typeof p.thought === 'string') return p.thought;
+                if (p.thought === true) return p.text || '';
+                if (p.type === 'thought') return p.thought || p.text || '';
+                return '';
+              })
               .join('') || undefined;
+
+          const content = textParts.map((p: any) => p.text).join('') || '';
 
           if (fnCallParts.length > 0) {
             const tool_calls = fnCallParts.map((p: any) => {
@@ -141,14 +150,14 @@ export class DeepSeekContentGenerator implements ContentGenerator {
             });
             messages.push({
               role: 'assistant',
-              content: textParts.map((p: any) => p.text).join('') || null,
+              content: content || null,
               reasoning_content,
               tool_calls,
             });
           } else {
             messages.push({
               role: 'assistant',
-              content: textParts.map((p: any) => p.text).join(''),
+              content,
               reasoning_content,
             });
           }
@@ -264,6 +273,9 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     // Map reasoning_content (thinking)
     if (message.reasoning_content) {
       parts.push({ text: message.reasoning_content, thought: true });
+    } else if (message.content === null && !message.tool_calls) {
+      // Safety net: if there is absolutely no content, add empty text part
+      parts.push({ text: '' });
     }
 
     // Map tool_calls to functionCall parts
