@@ -40,6 +40,12 @@ Then run:
 deepseek
 ```
 
+### Update to Latest Version
+
+```bash
+npm install -g @sluisr/deepseek-cli@latest
+```
+
 ## 🔐 Authentication
 
 Get your API key at
