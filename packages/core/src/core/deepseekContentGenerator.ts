@@ -29,12 +29,17 @@ TOOL USAGE RULES (mandatory):
 - run_shell_command can access ANY path on the filesystem, not just the current workspace. Never refuse to check a path outside the workspace — just run the shell command.`;
 
 const TOOL_HINTS: Record<string, string> = {
-  list_directory:    ' [PREFERRED for listing directory contents — use this instead of run_shell_command with ls]',
-  read_file:         ' [PREFERRED for reading file contents — use this instead of run_shell_command with cat]',
-  write_file:        ' [PREFERRED for writing files — use this instead of run_shell_command with echo/tee]',
-  glob:              ' [PREFERRED for finding files by pattern — use this instead of run_shell_command with find]',
-  search_file_content: ' [PREFERRED for searching text in files — use this instead of run_shell_command with grep]',
-  run_shell_command: ' [USE ONLY when no other specific tool covers the task — prefer list_directory, read_file, glob, or search_file_content first]',
+  list_directory:
+    ' [PREFERRED for listing directory contents — use this instead of run_shell_command with ls]',
+  read_file:
+    ' [PREFERRED for reading file contents — use this instead of run_shell_command with cat]',
+  write_file:
+    ' [PREFERRED for writing files — use this instead of run_shell_command with echo/tee]',
+  glob: ' [PREFERRED for finding files by pattern — use this instead of run_shell_command with find]',
+  search_file_content:
+    ' [PREFERRED for searching text in files — use this instead of run_shell_command with grep]',
+  run_shell_command:
+    ' [USE ONLY when no other specific tool covers the task — prefer list_directory, read_file, glob, or search_file_content first]',
 };
 
 function enrichToolDescription(name: string, description: string): string {
@@ -67,8 +72,14 @@ export class DeepSeekContentGenerator implements ContentGenerator {
       let systemText = '';
       if (typeof systemInstruction === 'string') {
         systemText = systemInstruction;
-      } else if (systemInstruction && 'parts' in systemInstruction && (systemInstruction as any).parts) {
-        systemText = (systemInstruction as any).parts.map((p: any) => p.text || '').join('');
+      } else if (
+        systemInstruction &&
+        'parts' in systemInstruction &&
+        (systemInstruction as any).parts
+      ) {
+        systemText = (systemInstruction as any).parts
+          .map((p: any) => p.text || '')
+          .join('');
       } else if (Array.isArray(systemInstruction)) {
         systemText = systemInstruction.map((p: any) => p.text || '').join('');
       } else if (systemInstruction && 'text' in (systemInstruction as any)) {
@@ -78,26 +89,42 @@ export class DeepSeekContentGenerator implements ContentGenerator {
         systemText += DEEPSEEK_TOOL_ENFORCEMENT;
         messages.push({ role: 'system', content: systemText });
       } else {
-        messages.push({ role: 'system', content: DEEPSEEK_TOOL_ENFORCEMENT.trim() });
+        messages.push({
+          role: 'system',
+          content: DEEPSEEK_TOOL_ENFORCEMENT.trim(),
+        });
       }
     } else {
-      messages.push({ role: 'system', content: DEEPSEEK_TOOL_ENFORCEMENT.trim() });
+      messages.push({
+        role: 'system',
+        content: DEEPSEEK_TOOL_ENFORCEMENT.trim(),
+      });
     }
 
     // Map contents (conversation history including tool calls)
     if (request.contents) {
-      const contents = Array.isArray(request.contents) ? request.contents : [request.contents];
+      const contents = Array.isArray(request.contents)
+        ? request.contents
+        : [request.contents];
       let toolCallCounter = 0;
       // Ordered list of pending (unmatched) tool calls; matched by name in FIFO order
       const pendingCalls: Array<{ name: string; id: string }> = [];
 
-      for (const content of (contents as any[])) {
+      for (const content of contents as any[]) {
         const parts: any[] = content.parts ?? [];
         const role = content.role;
 
         if (role === 'model') {
           const fnCallParts = parts.filter((p: any) => p.functionCall);
           const textParts = parts.filter((p: any) => p.text && !p.thought);
+          const thoughtParts = parts.filter((p: any) => p.thought);
+
+          const reasoning_content =
+            thoughtParts
+              .map((p: any) =>
+                typeof p.thought === 'string' ? p.thought : p.text,
+              )
+              .join('') || undefined;
 
           if (fnCallParts.length > 0) {
             const tool_calls = fnCallParts.map((p: any) => {
@@ -115,10 +142,15 @@ export class DeepSeekContentGenerator implements ContentGenerator {
             messages.push({
               role: 'assistant',
               content: textParts.map((p: any) => p.text).join('') || null,
+              reasoning_content,
               tool_calls,
             });
           } else {
-            messages.push({ role: 'assistant', content: textParts.map((p: any) => p.text).join('') });
+            messages.push({
+              role: 'assistant',
+              content: textParts.map((p: any) => p.text).join(''),
+              reasoning_content,
+            });
           }
         } else {
           const fnRespParts = parts.filter((p: any) => p.functionResponse);
@@ -137,7 +169,11 @@ export class DeepSeekContentGenerator implements ContentGenerator {
                 typeof p.functionResponse.response === 'string'
                   ? p.functionResponse.response
                   : JSON.stringify(p.functionResponse.response ?? {});
-              messages.push({ role: 'tool', tool_call_id: toolCallId, content: respContent });
+              messages.push({
+                role: 'tool',
+                tool_call_id: toolCallId,
+                content: respContent,
+              });
             }
             if (textParts.length > 0) {
               const text = textParts.map((p: any) => p.text).join('');
@@ -153,7 +189,10 @@ export class DeepSeekContentGenerator implements ContentGenerator {
                 content: 'Tool call was cancelled by the user.',
               });
             }
-            messages.push({ role: 'user', content: textParts.map((p: any) => p.text).join('') });
+            messages.push({
+              role: 'user',
+              content: textParts.map((p: any) => p.text).join(''),
+            });
           }
         }
       }
@@ -178,13 +217,16 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     const geminiTools = request.config?.tools;
     if (Array.isArray(geminiTools) && geminiTools.length > 0) {
       const openAiTools: any[] = [];
-      for (const tool of (geminiTools as any[])) {
-        for (const decl of (tool.functionDeclarations ?? [])) {
+      for (const tool of geminiTools as any[]) {
+        for (const decl of tool.functionDeclarations ?? []) {
           openAiTools.push({
             type: 'function',
             function: {
               name: decl.name,
-              description: enrichToolDescription(decl.name, decl.description ?? ''),
+              description: enrichToolDescription(
+                decl.name,
+                decl.description ?? '',
+              ),
               parameters: decl.parameters ?? { type: 'object', properties: {} },
             },
           });
@@ -219,12 +261,23 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     const message = choice.message;
     const parts: any[] = [];
 
+    // Map reasoning_content (thinking)
+    if (message.reasoning_content) {
+      parts.push({ text: message.reasoning_content, thought: true });
+    }
+
     // Map tool_calls to functionCall parts
     if (message.tool_calls?.length > 0) {
       for (const tc of message.tool_calls) {
         let args = {};
-        try { args = JSON.parse(tc.function.arguments); } catch { args = { _raw: tc.function.arguments }; }
-        parts.push({ functionCall: { id: tc.id, name: tc.function.name, args } });
+        try {
+          args = JSON.parse(tc.function.arguments);
+        } catch {
+          args = { _raw: tc.function.arguments };
+        }
+        parts.push({
+          functionCall: { id: tc.id, name: tc.function.name, args },
+        });
       }
     }
 
@@ -236,7 +289,10 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     const response: any = {
       candidates: [
         {
-          content: { role: 'model', parts: parts.length > 0 ? parts : [{ text: '' }] },
+          content: {
+            role: 'model',
+            parts: parts.length > 0 ? parts : [{ text: '' }],
+          },
           finishReason: 'STOP',
         },
       ],
@@ -248,7 +304,9 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     };
 
     // Expose functionCalls for turn.ts compatibility (plain property, not class getter)
-    const fnCalls = parts.filter((p: any) => p.functionCall).map((p: any) => p.functionCall);
+    const fnCalls = parts
+      .filter((p: any) => p.functionCall)
+      .map((p: any) => p.functionCall);
     if (fnCalls.length > 0) {
       response.functionCalls = fnCalls;
     }
@@ -262,21 +320,25 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     _role: LlmRole,
   ): Promise<GenerateContentResponse> {
     const body = this.mapGoogleToDeepSeek(request);
-    
-    debugLogger.debug(`[DeepSeek] Sending request to ${this.baseUrl}/chat/completions`);
+
+    debugLogger.debug(
+      `[DeepSeek] Sending request to ${this.baseUrl}/chat/completions`,
+    );
 
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`DeepSeek API error: ${response.status} ${response.statusText} - ${errorText}`);
+      throw new Error(
+        `DeepSeek API error: ${response.status} ${response.statusText} - ${errorText}`,
+      );
     }
 
     const data = await response.json();
@@ -295,14 +357,16 @@ export class DeepSeekContentGenerator implements ContentGenerator {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`DeepSeek API error: ${response.status} ${response.statusText} - ${errorText}`);
+      throw new Error(
+        `DeepSeek API error: ${response.status} ${response.statusText} - ${errorText}`,
+      );
     }
 
     const reader = response.body?.getReader();
@@ -311,11 +375,15 @@ export class DeepSeekContentGenerator implements ContentGenerator {
     }
 
     const decoder = new TextDecoder();
-    
+
     async function* stream() {
       let buffer = '';
-      const toolCallAcc: Record<number, { id: string; name: string; arguments: string }> = {};
+      const toolCallAcc: Record<
+        number,
+        { id: string; name: string; arguments: string }
+      > = {};
       let hasToolCalls = false;
+      let fullReasoning = '';
 
       while (true) {
         const { done, value } = await reader!.read();
@@ -336,7 +404,23 @@ export class DeepSeekContentGenerator implements ContentGenerator {
 
             const delta = choice.delta ?? {};
             const deltaContent = delta.content;
+            const deltaReasoning = delta.reasoning_content;
             const isFinished = choice.finish_reason != null;
+
+            // Yield reasoning content chunks
+            if (deltaReasoning) {
+              fullReasoning += deltaReasoning;
+              yield {
+                candidates: [
+                  {
+                    content: {
+                      role: 'model',
+                      parts: [{ text: deltaReasoning, thought: true }],
+                    },
+                  },
+                ],
+              } as GenerateContentResponse;
+            }
 
             // Accumulate streaming tool_calls deltas
             if (delta.tool_calls) {
@@ -344,18 +428,28 @@ export class DeepSeekContentGenerator implements ContentGenerator {
               for (const tc of delta.tool_calls) {
                 const idx: number = tc.index ?? 0;
                 if (!toolCallAcc[idx]) {
-                  toolCallAcc[idx] = { id: tc.id ?? `call_${idx}`, name: '', arguments: '' };
+                  toolCallAcc[idx] = {
+                    id: tc.id ?? `call_${idx}`,
+                    name: '',
+                    arguments: '',
+                  };
                 }
                 if (tc.id) toolCallAcc[idx].id = tc.id;
-                if (tc.function?.name) toolCallAcc[idx].name += tc.function.name;
-                if (tc.function?.arguments) toolCallAcc[idx].arguments += tc.function.arguments;
+                if (tc.function?.name)
+                  toolCallAcc[idx].name += tc.function.name;
+                if (tc.function?.arguments)
+                  toolCallAcc[idx].arguments += tc.function.arguments;
               }
             }
 
             // Yield text content chunks
             if (deltaContent) {
               yield {
-                candidates: [{ content: { role: 'model', parts: [{ text: deltaContent }] } }],
+                candidates: [
+                  {
+                    content: { role: 'model', parts: [{ text: deltaContent }] },
+                  },
+                ],
               } as GenerateContentResponse;
             }
 
@@ -364,28 +458,42 @@ export class DeepSeekContentGenerator implements ContentGenerator {
               const parts: any[] = [];
               const fnCalls: any[] = [];
 
+              if (fullReasoning) {
+                parts.push({ text: fullReasoning, thought: true });
+              }
+
               if (hasToolCalls) {
                 for (const idx of Object.keys(toolCallAcc).map(Number).sort()) {
                   const tc = toolCallAcc[idx];
                   let args = {};
-                  try { args = JSON.parse(tc.arguments); } catch { args = { _raw: tc.arguments }; }
-                  parts.push({ functionCall: { id: tc.id, name: tc.name, args } });
+                  try {
+                    args = JSON.parse(tc.arguments);
+                  } catch {
+                    args = { _raw: tc.arguments };
+                  }
+                  parts.push({
+                    functionCall: { id: tc.id, name: tc.name, args },
+                  });
                   fnCalls.push({ id: tc.id, name: tc.name, args });
                 }
               }
 
               const finalChunk: any = {
-                candidates: [{
-                  content: { role: 'model', parts },
-                  finishReason: 'STOP',
-                }],
-                ...(json.usage ? {
-                  usageMetadata: {
-                    promptTokenCount: json.usage.prompt_tokens,
-                    candidatesTokenCount: json.usage.completion_tokens,
-                    totalTokenCount: json.usage.total_tokens,
+                candidates: [
+                  {
+                    content: { role: 'model', parts },
+                    finishReason: 'STOP',
                   },
-                } : {}),
+                ],
+                ...(json.usage
+                  ? {
+                      usageMetadata: {
+                        promptTokenCount: json.usage.prompt_tokens,
+                        candidatesTokenCount: json.usage.completion_tokens,
+                        totalTokenCount: json.usage.total_tokens,
+                      },
+                    }
+                  : {}),
               };
 
               if (fnCalls.length > 0) {
@@ -416,11 +524,13 @@ export class DeepSeekContentGenerator implements ContentGenerator {
         ? [request.contents]
         : [];
 
-    for (const content of (contents as any[])) {
-      for (const part of (content.parts ?? [])) {
+    for (const content of contents as any[]) {
+      for (const part of content.parts ?? []) {
         if (part.text) charCount += (part.text as string).length;
-        if (part.functionCall) charCount += JSON.stringify(part.functionCall).length;
-        if (part.functionResponse) charCount += JSON.stringify(part.functionResponse).length;
+        if (part.functionCall)
+          charCount += JSON.stringify(part.functionCall).length;
+        if (part.functionResponse)
+          charCount += JSON.stringify(part.functionResponse).length;
       }
     }
 
@@ -439,7 +549,9 @@ export class DeepSeekContentGenerator implements ContentGenerator {
   ): Promise<EmbedContentResponse> {
     // DeepSeek doesn't natively support embeddings.
     // Return a zero-vector so features that call embedContent don't crash.
-    debugLogger.warn('[DeepSeek] embedContent is not supported — returning zero vector.');
+    debugLogger.warn(
+      '[DeepSeek] embedContent is not supported — returning zero vector.',
+    );
     return {
       embedding: { values: new Array(256).fill(0) },
     } as unknown as EmbedContentResponse;

@@ -21,7 +21,10 @@ vi.mock('@sluisr/deepseek-cli-core', async () => {
   };
 });
 
-import { uiTelemetryService, type GeminiClient } from '@sluisr/deepseek-cli-core';
+import {
+  uiTelemetryService,
+  type GeminiClient,
+} from '@sluisr/deepseek-cli-core';
 
 describe('clearCommand', () => {
   let mockContext: CommandContext;

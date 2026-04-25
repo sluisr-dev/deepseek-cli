@@ -26,7 +26,8 @@ vi.mock('node:os', async (importOriginal) => {
 
 // Mock @sluisr/deepseek-cli-core
 vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
-  const core = await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
+  const core =
+    await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   return {
     ...core,
     homedir: mockHomedir,

@@ -70,8 +70,8 @@ export async function checkForUpdates(
 
     if (isNightly) {
       const [nightlyUpdate, latestUpdate] = await Promise.all([
-        latestVersion(name, { version: 'nightly' }).catch(() => null),
-        latestVersion(name).catch(() => null),
+        latestVersion(name, { version: 'nightly' }).catch(() => undefined),
+        latestVersion(name).catch(() => undefined),
       ]);
 
       const bestUpdate = getBestAvailableUpdate(nightlyUpdate, latestUpdate);
@@ -90,7 +90,7 @@ export async function checkForUpdates(
         };
       }
     } else {
-      const latestUpdate = await latestVersion(name).catch(() => null);
+      const latestUpdate = await latestVersion(name).catch(() => undefined);
 
       if (latestUpdate && semver.gt(latestUpdate, currentVersion)) {
         const message = `DeepSeek CLI update available! ${currentVersion} → ${latestUpdate}`;

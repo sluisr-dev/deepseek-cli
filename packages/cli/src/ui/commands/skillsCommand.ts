@@ -17,7 +17,10 @@ import {
 } from '../types.js';
 import { disableSkill, enableSkill } from '../../utils/skillSettings.js';
 
-import { getAdminErrorMessage, getErrorMessage } from '@sluisr/deepseek-cli-core';
+import {
+  getAdminErrorMessage,
+  getErrorMessage,
+} from '@sluisr/deepseek-cli-core';
 import {
   linkSkill,
   renderSkillActionFeedback,

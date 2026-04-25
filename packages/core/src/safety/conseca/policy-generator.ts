@@ -110,9 +110,12 @@ export async function generatePolicy(
   }
 
   try {
-    const responseSchemaObj: any = (zodToJsonSchema as any)(SecurityPolicyResponseSchema, {
-      target: 'openApi3',
-    });
+    const responseSchemaObj: any = (zodToJsonSchema as any)(
+      SecurityPolicyResponseSchema,
+      {
+        target: 'openApi3',
+      },
+    );
 
     const result = await contentGenerator.generateContent(
       {

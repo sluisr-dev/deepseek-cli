@@ -4,7 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { type Config, ACTIVATE_SKILL_TOOL_NAME } from '@sluisr/deepseek-cli-core';
+import {
+  type Config,
+  ACTIVATE_SKILL_TOOL_NAME,
+} from '@sluisr/deepseek-cli-core';
 import { CommandKind, type SlashCommand } from '../ui/commands/types.js';
 import { type ICommandLoader } from './types.js';
 

@@ -756,9 +756,10 @@ export const AppContainer = (props: AppContainerProps) => {
     initializationResult.authError,
     initializationResult.accountSuspensionInfo,
   );
-  const [authContext, setAuthContext] = useState<{ requiresRestart?: boolean; pendingAuthType?: AuthType }>(
-    {},
-  );
+  const [authContext, setAuthContext] = useState<{
+    requiresRestart?: boolean;
+    pendingAuthType?: AuthType;
+  }>({});
 
   useEffect(() => {
     if (authState === AuthState.Authenticated && authContext.requiresRestart) {
@@ -888,7 +889,10 @@ Logging in with Google... Restarting Gemini CLI to continue.
           return;
         }
 
-        const resolvedAuthType = pendingAuthType ?? authContext.pendingAuthType ?? AuthType.USE_DEEPSEEK;
+        const resolvedAuthType =
+          pendingAuthType ??
+          authContext.pendingAuthType ??
+          AuthType.USE_DEEPSEEK;
         if (resolvedAuthType === AuthType.USE_DEEPSEEK) {
           await saveDeepSeekApiKey(apiKey);
           await reloadApiKey(AuthType.USE_DEEPSEEK);
@@ -906,7 +910,15 @@ Logging in with Google... Restarting Gemini CLI to continue.
         );
       }
     },
-    [setAuthState, onAuthError, reloadApiKey, config, pendingAuthType, authContext.pendingAuthType, setPendingAuthType],
+    [
+      setAuthState,
+      onAuthError,
+      reloadApiKey,
+      config,
+      pendingAuthType,
+      authContext.pendingAuthType,
+      setPendingAuthType,
+    ],
   );
 
   const handleApiKeyCancel = useCallback(() => {
@@ -1633,9 +1645,9 @@ Logging in with Google... Restarting Gemini CLI to continue.
   }, []);
   const shouldShowIdePrompt = Boolean(
     currentIDE &&
-      !config.getIdeMode() &&
-      !settings.merged.ide.hasSeenNudge &&
-      !idePromptAnswered,
+    !config.getIdeMode() &&
+    !settings.merged.ide.hasSeenNudge &&
+    !idePromptAnswered,
   );
 
   const [showErrorDetails, setShowErrorDetails] = useState<boolean>(false);
@@ -1916,9 +1928,8 @@ Logging in with Google... Restarting Gemini CLI to continue.
       if (keyMatchers[Command.SHOW_ERROR_DETAILS](key)) {
         if (settings.merged.general.devtools) {
           void (async () => {
-            const { toggleDevToolsPanel } = await import(
-              '../utils/devtoolsService.js'
-            );
+            const { toggleDevToolsPanel } =
+              await import('../utils/devtoolsService.js');
             await toggleDevToolsPanel(
               config,
               showErrorDetails,

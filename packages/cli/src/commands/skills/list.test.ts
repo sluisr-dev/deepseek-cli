@@ -20,9 +20,8 @@ import { loadCliConfig } from '../../config/config.js';
 import chalk from 'chalk';
 
 vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
-  const { mockCoreDebugLogger } = await import(
-    '../../test-utils/mockDebugLogger.js'
-  );
+  const { mockCoreDebugLogger } =
+    await import('../../test-utils/mockDebugLogger.js');
   return mockCoreDebugLogger(
     await importOriginal<typeof import('@sluisr/deepseek-cli-core')>(),
     {

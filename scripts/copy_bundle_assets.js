@@ -67,8 +67,12 @@ if (existsSync(docsSrc)) {
 const builtinSkillsSrc = join(root, 'packages/core/src/skills/builtin');
 const builtinSkillsDest = join(bundleDir, 'builtin');
 if (existsSync(builtinSkillsSrc)) {
-  if (existsSync(builtinSkillsDest)) rmSync(builtinSkillsDest, { recursive: true, force: true });
-  cpSync(builtinSkillsSrc, builtinSkillsDest, { recursive: true, dereference: true });
+  if (existsSync(builtinSkillsDest))
+    rmSync(builtinSkillsDest, { recursive: true, force: true });
+  cpSync(builtinSkillsSrc, builtinSkillsDest, {
+    recursive: true,
+    dereference: true,
+  });
   console.log('Copied built-in skills to bundle/builtin/');
 }
 
@@ -84,8 +88,12 @@ const devtoolsDistSrc = join(devtoolsSrc, 'dist');
 if (existsSync(devtoolsDistSrc)) {
   mkdirSync(devtoolsDest, { recursive: true });
   const devtoolsDistDest = join(devtoolsDest, 'dist');
-  if (existsSync(devtoolsDistDest)) rmSync(devtoolsDistDest, { recursive: true, force: true });
-  cpSync(devtoolsDistSrc, devtoolsDistDest, { recursive: true, dereference: true });
+  if (existsSync(devtoolsDistDest))
+    rmSync(devtoolsDistDest, { recursive: true, force: true });
+  cpSync(devtoolsDistSrc, devtoolsDistDest, {
+    recursive: true,
+    dereference: true,
+  });
   copyFileSync(
     join(devtoolsSrc, 'package.json'),
     join(devtoolsDest, 'package.json'),
@@ -103,7 +111,8 @@ if (!existsSync(bundleMcpSrc)) {
   );
   process.exit(1);
 }
-if (existsSync(bundleMcpDest)) rmSync(bundleMcpDest, { recursive: true, force: true });
+if (existsSync(bundleMcpDest))
+  rmSync(bundleMcpDest, { recursive: true, force: true });
 cpSync(bundleMcpSrc, bundleMcpDest, { recursive: true, dereference: true });
 console.log('Copied bundled chrome-devtools-mcp to bundle/bundled/');
 
@@ -112,8 +121,12 @@ const ripgrepVendorSrc = join(root, 'packages/core/vendor/ripgrep');
 const ripgrepVendorDest = join(bundleDir, 'vendor', 'ripgrep');
 if (existsSync(ripgrepVendorSrc)) {
   mkdirSync(ripgrepVendorDest, { recursive: true });
-  if (existsSync(ripgrepVendorDest)) rmSync(ripgrepVendorDest, { recursive: true, force: true });
-  cpSync(ripgrepVendorSrc, ripgrepVendorDest, { recursive: true, dereference: true });
+  if (existsSync(ripgrepVendorDest))
+    rmSync(ripgrepVendorDest, { recursive: true, force: true });
+  cpSync(ripgrepVendorSrc, ripgrepVendorDest, {
+    recursive: true,
+    dereference: true,
+  });
   console.log('Copied ripgrep vendor binaries to bundle/vendor/ripgrep/');
 }
 
@@ -126,7 +139,8 @@ const extensionExamplesDest = join(bundleDir, 'examples');
 const EXCLUDED_EXAMPLE_DIRS = ['node_modules', 'dist'];
 
 if (existsSync(extensionExamplesSrc)) {
-  if (existsSync(extensionExamplesDest)) rmSync(extensionExamplesDest, { recursive: true, force: true });
+  if (existsSync(extensionExamplesDest))
+    rmSync(extensionExamplesDest, { recursive: true, force: true });
   cpSync(extensionExamplesSrc, extensionExamplesDest, {
     recursive: true,
     dereference: true,

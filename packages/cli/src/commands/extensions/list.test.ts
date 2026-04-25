@@ -11,9 +11,8 @@ import { ExtensionManager } from '../../config/extension-manager.js';
 import { loadSettings, type LoadedSettings } from '../../config/settings.js';
 
 vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
-  const { mockCoreDebugLogger } = await import(
-    '../../test-utils/mockDebugLogger.js'
-  );
+  const { mockCoreDebugLogger } =
+    await import('../../test-utils/mockDebugLogger.js');
   const actual =
     await importOriginal<typeof import('@sluisr/deepseek-cli-core')>();
   const mocked = mockCoreDebugLogger(actual, { stripAnsi: false });

@@ -25,7 +25,11 @@ import {
   type LoadedTrustedFolders,
 } from '../../config/trustedFolders.js';
 import * as trustedFolders from '../../config/trustedFolders.js';
-import { coreEvents, ExitCodes, isHeadlessMode } from '@sluisr/deepseek-cli-core';
+import {
+  coreEvents,
+  ExitCodes,
+  isHeadlessMode,
+} from '@sluisr/deepseek-cli-core';
 import { MessageType } from '../types.js';
 
 const mockedCwd = vi.hoisted(() => vi.fn().mockReturnValue('/mock/cwd'));

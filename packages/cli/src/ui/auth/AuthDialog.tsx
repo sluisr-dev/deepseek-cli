@@ -30,7 +30,10 @@ interface AuthDialogProps {
   setAuthState: (state: AuthState) => void;
   authError: string | null;
   onAuthError: (error: string | null) => void;
-  setAuthContext: (context: { requiresRestart?: boolean; pendingAuthType?: AuthType }) => void;
+  setAuthContext: (context: {
+    requiresRestart?: boolean;
+    pendingAuthType?: AuthType;
+  }) => void;
 }
 
 export function AuthDialog({
@@ -192,9 +195,7 @@ export function AuthDialog({
           </Text>
         </Box>
         <Box marginTop={1}>
-          <Text color={theme.text.link}>
-            {'https://deepseek.com'}
-          </Text>
+          <Text color={theme.text.link}>{'https://deepseek.com'}</Text>
         </Box>
       </Box>
     </Box>

@@ -143,10 +143,10 @@ export const FolderTrustDialog: React.FC<FolderTrustDialogProps> = ({
     <Box flexDirection="column">
       <Box marginBottom={1}>
         <Text color={theme.text.primary}>
-          Trusting a folder allows DeepSeek CLI to load its local configurations,
-          including custom commands, hooks, MCP servers, agent skills, and
-          settings. These configurations could execute code on your behalf or
-          change the behavior of the CLI.
+          Trusting a folder allows DeepSeek CLI to load its local
+          configurations, including custom commands, hooks, MCP servers, agent
+          skills, and settings. These configurations could execute code on your
+          behalf or change the behavior of the CLI.
         </Text>
       </Box>
 

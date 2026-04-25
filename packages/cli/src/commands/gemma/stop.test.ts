@@ -16,9 +16,8 @@ const mockReadServerProcessInfo = vi.hoisted(() => vi.fn());
 const mockResolveGemmaConfig = vi.hoisted(() => vi.fn());
 
 vi.mock('@sluisr/deepseek-cli-core', async (importOriginal) => {
-  const { mockCoreDebugLogger } = await import(
-    '../../test-utils/mockDebugLogger.js'
-  );
+  const { mockCoreDebugLogger } =
+    await import('../../test-utils/mockDebugLogger.js');
   return mockCoreDebugLogger(
     await importOriginal<typeof import('@sluisr/deepseek-cli-core')>(),
     {

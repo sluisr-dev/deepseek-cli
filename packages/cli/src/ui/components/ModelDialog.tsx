@@ -136,7 +136,8 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
         {
           value: DEEPSEEK_REASONER_MODEL,
           title: 'DeepSeek-V4-Pro',
-          description: 'Performance rivaling top closed-source models (1M context)',
+          description:
+            'Performance rivaling top closed-source models (1M context)',
           key: DEEPSEEK_REASONER_MODEL,
         },
       ];

@@ -8,7 +8,10 @@ import type React from 'react';
 import { StatsDisplay } from './StatsDisplay.js';
 import { useSessionStats } from '../contexts/SessionContext.js';
 import { useConfig } from '../contexts/ConfigContext.js';
-import { escapeShellArg, getShellConfiguration } from '@sluisr/deepseek-cli-core';
+import {
+  escapeShellArg,
+  getShellConfiguration,
+} from '@sluisr/deepseek-cli-core';
 
 interface SessionSummaryDisplayProps {
   duration: string;

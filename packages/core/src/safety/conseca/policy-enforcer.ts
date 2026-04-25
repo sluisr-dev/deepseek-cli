@@ -86,9 +86,12 @@ export async function enforcePolicy(
   );
 
   try {
-    const responseSchemaObj: any = (zodToJsonSchema as any)(EnforcementResultSchema, {
-      target: 'openApi3',
-    });
+    const responseSchemaObj: any = (zodToJsonSchema as any)(
+      EnforcementResultSchema,
+      {
+        target: 'openApi3',
+      },
+    );
 
     const result = await contentGenerator.generateContent(
       {
