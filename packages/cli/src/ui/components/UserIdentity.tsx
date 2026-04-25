@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2026 Google LLC
+ * Copyright 2025 sluisr (DeepSeek CLI)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -50,11 +50,11 @@ export const UserIdentity: React.FC<UserIdentityProps> = ({ config }) => {
         <Text color={theme.text.primary} wrap="truncate-end">
           {authType === AuthType.LOGIN_WITH_GOOGLE ? (
             <Text>
-              <Text bold>Signed in with Google{email ? ':' : ''}</Text>
+              <Text bold>Session started with Google (Context):</Text>
               {email ? ` ${email}` : ''}
             </Text>
           ) : (
-            `Authenticated with ${authType}`
+            `Autenticado con ${authType === 'deepseek-api-key' ? 'DeepSeek' : authType}`
           )}
         </Text>
         <Text color={theme.text.secondary}> /auth</Text>

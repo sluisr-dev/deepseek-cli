@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Google LLC
+ * Copyright 2025 sluisr (DeepSeek CLI)
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -124,20 +124,19 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
   );
 
   const mainOptions = useMemo(() => {
-    // --- DEEPSEEK PATH ---
-    if (isDeepSeekAuth) {
+    // --- DEEPSEEK PATH (Forzado como prioritario) ---
+    if (true || isDeepSeekAuth) {
       return [
         {
           value: DEEPSEEK_CHAT_MODEL,
           title: 'DeepSeek-V4-Flash',
-          description: 'Fast, efficient, and economical choice (1M context)',
+          description: 'Fast, efficient and cost-effective (1M context)',
           key: DEEPSEEK_CHAT_MODEL,
         },
         {
           value: DEEPSEEK_REASONER_MODEL,
-          title: 'DeepSeek-V4-Pro',
-          description:
-            'Performance rivaling top closed-source models (1M context)',
+          title: 'DeepSeek-V4-Pro (Thinking)',
+          description: 'Superior performance with deep reasoning (1M context)',
           key: DEEPSEEK_REASONER_MODEL,
         },
       ];
@@ -146,10 +145,10 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
     // --- DYNAMIC PATH ---
     if (
       config?.getExperimentalDynamicModelConfiguration?.() === true &&
-      config.getModelConfigService
+      config?.getModelConfigService
     ) {
       const allOptions = config
-        .getModelConfigService()
+        ?.getModelConfigService()
         .getAvailableModelOptions({
           useGemini3_1: useGemini31,
           useGemini3_1FlashLite: useGemini31FlashLite,
@@ -158,7 +157,7 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
           hasAccessToProModel,
         });
 
-      const list = allOptions
+      const list = (allOptions ?? [])
         .filter((o) => o.tier === 'auto')
         .map((o) => ({
           value: o.modelId,
@@ -181,11 +180,11 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
     // --- LEGACY PATH ---
     const list = [
       {
-        value: DEFAULT_GEMINI_MODEL_AUTO,
-        title: getDisplayString(DEFAULT_GEMINI_MODEL_AUTO),
+        value: DEEPSEEK_CHAT_MODEL,
+        title: 'DeepSeek Auto',
         description:
-          'Let Gemini CLI decide the best model for the task: gemini-2.5-pro, gemini-2.5-flash',
-        key: DEFAULT_GEMINI_MODEL_AUTO,
+          'Deja que DeepSeek CLI decida el mejor modelo para la tarea',
+        key: DEEPSEEK_CHAT_MODEL,
       },
       {
         value: 'Manual',
@@ -202,8 +201,8 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
         value: PREVIEW_GEMINI_MODEL_AUTO,
         title: getDisplayString(PREVIEW_GEMINI_MODEL_AUTO),
         description: useGemini31
-          ? 'Let Gemini CLI decide the best model for the task: gemini-3.1-pro, gemini-3-flash'
-          : 'Let Gemini CLI decide the best model for the task: gemini-3-pro, gemini-3-flash',
+          ? 'Let DeepSeek CLI decide the best model for the task: gemini-3.1-pro, gemini-3-flash'
+          : 'Let DeepSeek CLI decide the best model for the task: gemini-3-pro, gemini-3-flash',
         key: PREVIEW_GEMINI_MODEL_AUTO,
       });
     }
@@ -351,7 +350,7 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
       padding={1}
       width="100%"
     >
-      <Text bold>Select Model</Text>
+      <Text bold>Select Model DeepSeek</Text>
 
       <Box marginTop={1}>
         <DescriptiveRadioButtonSelect
@@ -364,17 +363,19 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
       <Box marginTop={1} flexDirection="column">
         <Box>
           <Text bold color={theme.text.primary}>
-            Remember model for future sessions:{' '}
+            Recordar modelo para futuras sesiones:{' '}
           </Text>
           <Text color={theme.status.success}>
-            {persistMode ? 'true' : 'false'}
+            {persistMode ? 'verdadero' : 'falso'}
           </Text>
-          <Text color={theme.text.secondary}> (Press Tab to toggle)</Text>
+          <Text color={theme.text.secondary}> (Presiona Tab para cambiar)</Text>
         </Box>
       </Box>
       <Box flexDirection="column">
         <Text color={theme.text.secondary}>
-          {'> To use a specific Gemini model on startup, use the --model flag.'}
+          {
+            '> To use a specific DeepSeek model at startup, use the --model flag.'
+          }
         </Text>
       </Box>
       <ModelQuotaDisplay
@@ -382,7 +383,7 @@ export function ModelDialog({ onClose }: ModelDialogProps): React.JSX.Element {
         availableWidth={terminalWidth - 2}
       />
       <Box marginTop={1} flexDirection="column">
-        <Text color={theme.text.secondary}>(Press Esc to close)</Text>
+        <Text color={theme.text.secondary}>(Presiona Esc para cerrar)</Text>
       </Box>
     </Box>
   );

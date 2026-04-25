@@ -1,6 +1,6 @@
 {
   "name": "@sluisr/deepseek-cli",
-  "version": "1.0.12",
+  "version": "1.0.14",
   "engines": {
     "node": ">=20.0.0"
   },
@@ -8,7 +8,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "description": "DeepSeek CLI — unofficial adaptation of Gemini CLI by sluisr",
+  "description": "DeepSeek CLI — unofficial adaptation of DeepSeek CLI by sluisr",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -89,9 +89,7 @@
     "deepseek": "bundle/deepseek.js"
   },
   "files": [
-    "bundle/",
-    "README.md",
-    "LICENSE"
+    "bundle/"
   ],
   "devDependencies": {
     "@agentclientprotocol/sdk": "^0.16.1",

@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import fs from 'node:fs';
+import path from 'node:path';
 import type {
   CountTokensResponse,
   GenerateContentResponse,
@@ -51,16 +53,74 @@ export class DeepSeekContentGenerator implements ContentGenerator {
   userTierName?: string;
   paidTier?: GeminiUserTier;
 
+  // Cache to persist reasoning between conversation turns
+  private static readonly reasoningCache = new Map<string, string>();
+  private static cacheLoaded = false;
+  private static readonly CACHE_FILE = path.join(
+    process.cwd(),
+    'deepseek_reasoning_cache.json',
+  );
+
+  private static loadCache() {
+    if (this.cacheLoaded) return;
+    try {
+      if (fs.existsSync(this.CACHE_FILE)) {
+        const data = JSON.parse(fs.readFileSync(this.CACHE_FILE, 'utf-8'));
+        for (const [k, v] of Object.entries(data)) {
+          this.reasoningCache.set(k, v as string);
+        }
+        fs.appendFileSync(
+          'deepseek_payload_debug.log',
+          `[CACHE] Cargadas ${this.reasoningCache.size} entradas desde disco.\n`,
+        );
+      }
+    } catch (e) {
+      // Ignore loading errors
+    }
+    this.cacheLoaded = true;
+  }
+
+  private static saveCache() {
+    try {
+      const data = Object.fromEntries(this.reasoningCache);
+      fs.writeFileSync(this.CACHE_FILE, JSON.stringify(data, null, 2));
+    } catch (e) {
+      // Ignore saving errors
+    }
+  }
+
   constructor(
     private readonly apiKey: string,
     private readonly baseUrl: string = 'https://api.deepseek.com',
-  ) {}
+  ) {
+    DeepSeekContentGenerator.loadCache();
+  }
 
   private resolveDeepSeekModel(model?: string): string {
     if (model && model.startsWith('deepseek-')) {
       return model;
     }
     return 'deepseek-chat';
+  }
+
+  /**
+   * Generates a stable message signature for the cache.
+   * Ignores thoughts (since the CLI core strips them) but includes text and tools.
+   */
+  private getMessageKey(text: string, tool_calls?: any[]): string {
+    const cleanText = text.trim().replace(/\s+/g, ' ');
+
+    const calls = tool_calls
+      ?.map((tc: any) => ({
+        name: tc.name || tc.function?.name,
+        args:
+          typeof (tc.args || tc.function?.arguments) === 'string'
+            ? tc.args || tc.function?.arguments
+            : JSON.stringify(tc.args || tc.function?.arguments || {}),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return JSON.stringify({ text: cleanText, calls });
   }
 
   private mapGoogleToDeepSeek(request: GenerateContentParameters): any {
@@ -123,7 +183,31 @@ export class DeepSeekContentGenerator implements ContentGenerator {
             (p: any) => p.text && !p.thought && p.type !== 'thought',
           );
 
+          // Triple-Check recovery strategy with Stable Signature:
+          // 1. Direct property (if it survived)
+          // 2. Parts with thought flag (if the Core respected them)
+          // 3. GLOBAL CACHE with Stable Signature (our definitive protection)
+          const assistantText =
+            textParts.map((p: any) => p.text).join('') || '';
+          const tool_calls = fnCallParts.map((p: any) => ({
+            name: p.functionCall.name,
+            args: p.functionCall.args,
+          }));
+
+          DeepSeekContentGenerator.loadCache();
+          const messageKey = this.getMessageKey(assistantText, tool_calls);
+          const cachedReasoning =
+            DeepSeekContentGenerator.reasoningCache.get(messageKey);
+
+          if (cachedReasoning) {
+            fs.appendFileSync(
+              'deepseek_payload_debug.log',
+              `[CACHE HIT] Recovered for: ${assistantText.substring(0, 30)}... (Key: ${messageKey.substring(0, 50)})\n`,
+            );
+          }
+
           const reasoning_content =
+            content.reasoning_content ||
             thoughtParts
               .map((p: any) => {
                 if (typeof p.thought === 'string') return p.thought;
@@ -131,13 +215,13 @@ export class DeepSeekContentGenerator implements ContentGenerator {
                 if (p.type === 'thought') return p.thought || p.text || '';
                 return '';
               })
-              .join('') || undefined;
-
-          const content = textParts.map((p: any) => p.text).join('') || '';
+              .join('') ||
+            cachedReasoning ||
+            undefined;
 
           const assistantMessage: any = {
             role: 'assistant',
-            content: content, // Never null for proxy compatibility
+            content: assistantText || '',
           };
 
           if (reasoning_content) {
@@ -222,6 +306,7 @@ export class DeepSeekContentGenerator implements ContentGenerator {
 
     // Map Gemini tools to OpenAI function-calling format
     const geminiTools = request.config?.tools;
+
     if (Array.isArray(geminiTools) && geminiTools.length > 0) {
       const openAiTools: any[] = [];
       for (const tool of geminiTools as any[]) {
@@ -302,6 +387,8 @@ export class DeepSeekContentGenerator implements ContentGenerator {
           content: {
             role: 'model',
             parts: parts.length > 0 ? parts : [{ text: '' }],
+            // Protection: Save the reasoning directly in the content object
+            reasoning_content: message.reasoning_content,
           },
           finishReason: 'STOP',
         },
@@ -321,6 +408,31 @@ export class DeepSeekContentGenerator implements ContentGenerator {
       response.functionCalls = fnCalls;
     }
 
+    // Save to cache for the next turn using the stable signature
+    if (message.reasoning_content) {
+      const messageKey = this.getMessageKey(
+        message.content || '',
+        message.tool_calls,
+      );
+      fs.appendFileSync(
+        'deepseek_payload_debug.log',
+        `[CACHE SAVE] Saving for: ${(message.content || '').substring(0, 30)}... (Key: ${messageKey.substring(0, 50)})\n`,
+      );
+      DeepSeekContentGenerator.reasoningCache.set(
+        messageKey,
+        message.reasoning_content,
+      );
+      // Limit cache size
+      if (DeepSeekContentGenerator.reasoningCache.size > 200) {
+        const firstKey = DeepSeekContentGenerator.reasoningCache
+          .keys()
+          .next().value;
+        if (firstKey !== undefined)
+          DeepSeekContentGenerator.reasoningCache.delete(firstKey);
+      }
+      DeepSeekContentGenerator.saveCache();
+    }
+
     return response as GenerateContentResponse;
   }
 
@@ -335,6 +447,14 @@ export class DeepSeekContentGenerator implements ContentGenerator {
       `[DeepSeek] Sending request to ${this.baseUrl}/chat/completions`,
     );
 
+    try {
+      fs.appendFileSync(
+        'deepseek_payload_debug.log',
+        `--- REQUEST AT ${new Date().toISOString()} ---\n${JSON.stringify(body, null, 2)}\n\n`,
+      );
+    } catch (e) {
+      // Ignore
+    }
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -362,7 +482,16 @@ export class DeepSeekContentGenerator implements ContentGenerator {
   ): Promise<AsyncGenerator<GenerateContentResponse>> {
     const body = this.mapGoogleToDeepSeek(request);
     body.stream = true;
+    const self = this;
 
+    try {
+      fs.appendFileSync(
+        'deepseek_payload_debug.log',
+        `--- STREAM REQUEST AT ${new Date().toISOString()} ---\n${JSON.stringify(body, null, 2)}\n\n`,
+      );
+    } catch (e) {
+      // Ignore
+    }
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -394,6 +523,7 @@ export class DeepSeekContentGenerator implements ContentGenerator {
       > = {};
       let hasToolCalls = false;
       let fullReasoning = '';
+      let fullText = '';
 
       while (true) {
         const { done, value } = await reader!.read();
@@ -454,6 +584,7 @@ export class DeepSeekContentGenerator implements ContentGenerator {
 
             // Yield text content chunks
             if (deltaContent) {
+              fullText += deltaContent;
               yield {
                 candidates: [
                   {
@@ -491,7 +622,12 @@ export class DeepSeekContentGenerator implements ContentGenerator {
               const finalChunk: any = {
                 candidates: [
                   {
-                    content: { role: 'model', parts },
+                    content: {
+                      role: 'model',
+                      parts,
+                      // Protection: Save the accumulated reasoning in the final object
+                      reasoning_content: fullReasoning,
+                    },
                     finishReason: 'STOP',
                   },
                 ],
@@ -508,6 +644,38 @@ export class DeepSeekContentGenerator implements ContentGenerator {
 
               if (fnCalls.length > 0) {
                 finalChunk.functionCalls = fnCalls;
+              }
+
+              // Save to cache for the next turn (Streaming) with stable signature
+              if (fullReasoning) {
+                // For streaming, reconstruct accumulated tool_calls if they exist
+                const fnCalls = hasToolCalls
+                  ? Object.keys(toolCallAcc)
+                      .map(Number)
+                      .sort()
+                      .map((idx) => ({
+                        name: toolCallAcc[idx].name,
+                        args: JSON.parse(toolCallAcc[idx].arguments || '{}'),
+                      }))
+                  : undefined;
+
+                const messageKey = self.getMessageKey(fullText, fnCalls);
+                fs.appendFileSync(
+                  'deepseek_payload_debug.log',
+                  `[CACHE SAVE STREAM] Saving for: ${fullText.substring(0, 30)}... (Key: ${messageKey.substring(0, 50)})\n`,
+                );
+                DeepSeekContentGenerator.reasoningCache.set(
+                  messageKey,
+                  fullReasoning,
+                );
+                if (DeepSeekContentGenerator.reasoningCache.size > 200) {
+                  const firstKey = DeepSeekContentGenerator.reasoningCache
+                    .keys()
+                    .next().value;
+                  if (firstKey !== undefined)
+                    DeepSeekContentGenerator.reasoningCache.delete(firstKey);
+                }
+                DeepSeekContentGenerator.saveCache();
               }
 
               yield finalChunk as GenerateContentResponse;
