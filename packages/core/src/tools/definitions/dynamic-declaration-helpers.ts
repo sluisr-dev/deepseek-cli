@@ -166,7 +166,7 @@ export function getExitPlanModeDeclaration(): FunctionDeclaration {
   return {
     name: EXIT_PLAN_MODE_TOOL_NAME,
     description:
-      'Finalizes the planning phase and transitions to implementation by presenting the plan for formal user approval. You MUST reach an informal agreement with the user in the chat regarding the proposed strategy BEFORE calling this tool. This tool MUST be used to exit Plan Mode before any source code edits can be performed.',
+      'Finalizes the planning phase and transitions to implementation by presenting the plan for formal user approval. You MUST reach an informal agreement with the user in the chat regarding the proposed strategy BEFORE calling this tool. This tool MUST be used to exit Plan Mode before any source code edits can be performed. If you have not yet written the plan as a Markdown file in the plans directory, pass its full Markdown body via `plan_content` and the tool will create the file for you (handy for a single-shot exit without an extra `write_file` call).',
     parametersJsonSchema: {
       type: 'object',
       required: [EXIT_PLAN_PARAM_PLAN_FILENAME],
@@ -174,6 +174,11 @@ export function getExitPlanModeDeclaration(): FunctionDeclaration {
         [EXIT_PLAN_PARAM_PLAN_FILENAME]: {
           type: 'string',
           description: `The filename of the finalized plan (e.g., "feature-x.md"). Do not provide an absolute path.`,
+        },
+        plan_content: {
+          type: 'string',
+          description:
+            'Optional. The full Markdown body of the plan. Provide this when the plan file does not yet exist; the tool will create it inside the plans directory before requesting approval. If the file already exists, this parameter is ignored.',
         },
       },
     },

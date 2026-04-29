@@ -1,7 +1,7 @@
 {
   "name": "@sluisr/deepseek-cli-core",
-  "version": "1.0.1",
-  "description": "DeepSeek CLI Core — adapted from Gemini CLI by sluisr",
+  "version": "1.1.0",
+  "description": "DeepSeek CLI Core — adapted from DeepSeek CLI by sluisr",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

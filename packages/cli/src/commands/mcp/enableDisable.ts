@@ -37,7 +37,7 @@ async function handleEnable(args: Args): Promise<void> {
   const normalizedServerNames = Object.keys(servers).map(normalizeServerId);
   if (!normalizedServerNames.includes(name)) {
     debugLogger.log(
-      `${RED}Error:${RESET} Server '${args.name}' not found. Use 'gemini mcp' to see available servers.`,
+      `${RED}Error:${RESET} Server '${args.name}' not found. Use 'deepseek mcp' to see available servers.`,
     );
     return;
   }
@@ -80,7 +80,7 @@ async function handleDisable(args: Args): Promise<void> {
   const normalizedServerNames = Object.keys(servers).map(normalizeServerId);
   if (!normalizedServerNames.includes(name)) {
     debugLogger.log(
-      `${RED}Error:${RESET} Server '${args.name}' not found. Use 'gemini mcp' to see available servers.`,
+      `${RED}Error:${RESET} Server '${args.name}' not found. Use 'deepseek mcp' to see available servers.`,
     );
     return;
   }

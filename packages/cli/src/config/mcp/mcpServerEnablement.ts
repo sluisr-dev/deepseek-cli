@@ -158,7 +158,7 @@ export async function canLoadServer(
   if (config.enablement?.isSessionDisabled(normalizedId)) {
     return {
       allowed: false,
-      reason: `Server '${serverId}' is disabled for this session. Run 'gemini mcp enable ${serverId} --session' to clear.`,
+      reason: `Server '${serverId}' is disabled for this session. Run 'deepseek mcp enable ${serverId} --session' to clear.`,
       blockType: 'session',
     };
   }
@@ -170,7 +170,7 @@ export async function canLoadServer(
   ) {
     return {
       allowed: false,
-      reason: `Server '${serverId}' is disabled. Run 'gemini mcp enable ${serverId}' to enable.`,
+      reason: `Server '${serverId}' is disabled. Run 'deepseek mcp enable ${serverId}' to enable.`,
       blockType: 'enablement',
     };
   }

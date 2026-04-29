@@ -150,7 +150,7 @@ describe('<SessionSummaryDisplay />', () => {
       const output = lastFrame();
 
       // Standard UUID characters should not be escaped/quoted by default for bash.
-      expect(output).toContain('gemini --resume 1234-abcd-5678-efgh');
+      expect(output).toContain('deepseek --resume 1234-abcd-5678-efgh');
       unmount();
     });
 
@@ -163,7 +163,7 @@ describe('<SessionSummaryDisplay />', () => {
       const output = lastFrame();
 
       // escapeShellArg (using shell-quote for bash) will wrap special characters in double quotes.
-      expect(output).toContain('gemini --resume "\'; rm -rf / #"');
+      expect(output).toContain('deepseek --resume "\'; rm -rf / #"');
       unmount();
     });
 
@@ -182,7 +182,7 @@ describe('<SessionSummaryDisplay />', () => {
       const output = lastFrame();
 
       // PowerShell wraps strings in single quotes
-      expect(output).toContain("gemini --resume '1234-abcd-5678-efgh'");
+      expect(output).toContain("deepseek --resume '1234-abcd-5678-efgh'");
       unmount();
     });
 
@@ -201,7 +201,7 @@ describe('<SessionSummaryDisplay />', () => {
       const output = lastFrame();
 
       // PowerShell wraps in single quotes and escapes internal single quotes by doubling them
-      expect(output).toContain("gemini --resume '''; rm -rf / #'");
+      expect(output).toContain("deepseek --resume '''; rm -rf / #'");
       unmount();
     });
   });
@@ -223,7 +223,7 @@ describe('<SessionSummaryDisplay />', () => {
 
       expect(output).toContain('To resume work in this worktree:');
       expect(output).toContain(
-        'cd /path/to/foo-bar && gemini --resume test-session',
+        'cd /path/to/foo-bar && deepseek --resume test-session',
       );
       expect(output).toContain(
         'To remove manually: git worktree remove /path/to/foo-bar',

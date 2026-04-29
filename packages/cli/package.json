@@ -1,8 +1,8 @@
 {
   "name": "@sluisr/deepseek-cli-app",
   "private": true,
-  "version": "1.0.5",
-  "description": "DeepSeek CLI App (workspace, not published) — unofficial adaptation of Gemini CLI by sluisr",
+  "version": "1.1.0",
+  "description": "DeepSeek CLI App (workspace, not published) — unofficial adaptation of DeepSeek CLI by sluisr",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

@@ -6,6 +6,7 @@
  */
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import type {
   CountTokensResponse,
@@ -19,6 +20,64 @@ import type { ContentGenerator } from './contentGenerator.js';
 import type { UserTierId, GeminiUserTier } from '../code_assist/types.js';
 import { LlmRole } from '../telemetry/llmRole.js';
 import { debugLogger } from '../utils/debugLogger.js';
+
+// Marker field used to smuggle DeepSeek `reasoning_content` through the
+// Gemini Core `Content` history. It is attached to a `Part` object that
+// survives the Core's filtering (i.e. a non-thought text part or a
+// functionCall part). See `mapGoogleToDeepSeek` for recovery logic.
+const REASONING_FIELD = '_deepseekReasoning';
+
+// Directory used to persist DeepSeek-specific state (reasoning cache, debug
+// log). Falls back to the OS temp dir if `$HOME` is unavailable.
+const DEEPSEEK_STATE_DIR = path.join(
+  process.env['HOME'] || os.homedir() || os.tmpdir(),
+  '.deepseek',
+);
+
+// Debug logging is opt-in via env var to avoid cluttering user directories.
+const DEBUG_LOG_ENABLED =
+  process.env['DEEPSEEK_DEBUG'] === '1' ||
+  process.env['DEEPSEEK_DEBUG_PAYLOAD'] === '1';
+const DEBUG_LOG_FILE = path.join(DEEPSEEK_STATE_DIR, 'payload_debug.log');
+
+function debugAppend(message: string) {
+  if (!DEBUG_LOG_ENABLED) return;
+  try {
+    fs.mkdirSync(DEEPSEEK_STATE_DIR, { recursive: true });
+    fs.appendFileSync(DEBUG_LOG_FILE, message);
+  } catch {
+    // Best-effort: never fail the API path because of logging issues.
+  }
+}
+
+/**
+ * Logs DeepSeek context-cache effectiveness for the current request.
+ *
+ * The DeepSeek API charges cache-hit input tokens at ~1/10 the cache-miss
+ * price. Exposing this ratio is critical for tuning prompt prefix stability
+ * (system instruction, tool list ordering, etc.). The line is only written
+ * when `DEEPSEEK_DEBUG=1` to avoid noisy output for end-users.
+ */
+function logCacheStats(
+  source: 'stream' | 'non-stream',
+  usage: {
+    prompt_tokens?: number;
+    prompt_cache_hit_tokens?: number;
+    prompt_cache_miss_tokens?: number;
+    completion_tokens?: number;
+    total_tokens?: number;
+  },
+) {
+  if (!DEBUG_LOG_ENABLED) return;
+  const prompt = usage.prompt_tokens ?? 0;
+  const hit = usage.prompt_cache_hit_tokens ?? 0;
+  const miss = usage.prompt_cache_miss_tokens ?? Math.max(0, prompt - hit);
+  const completion = usage.completion_tokens ?? 0;
+  const ratio = prompt > 0 ? ((hit / prompt) * 100).toFixed(1) : '0.0';
+  debugAppend(
+    `[USAGE ${source}] prompt=${prompt} (hit=${hit}, miss=${miss}, cache=${ratio}%) completion=${completion}\n`,
+  );
+}
 
 const DEEPSEEK_TOOL_ENFORCEMENT = `
 
@@ -53,12 +112,14 @@ export class DeepSeekContentGenerator implements ContentGenerator {
   userTierName?: string;
   paidTier?: GeminiUserTier;
 
-  // Cache to persist reasoning between conversation turns
+  // Cache to persist reasoning between conversation turns. The cache file is
+  // stored under `~/.deepseek/` so it survives `cd`s within the same session
+  // and does not pollute user project directories.
   private static readonly reasoningCache = new Map<string, string>();
   private static cacheLoaded = false;
   private static readonly CACHE_FILE = path.join(
-    process.cwd(),
-    'deepseek_reasoning_cache.json',
+    DEEPSEEK_STATE_DIR,
+    'reasoning_cache.json',
   );
 
   private static loadCache() {
@@ -69,23 +130,23 @@ export class DeepSeekContentGenerator implements ContentGenerator {
         for (const [k, v] of Object.entries(data)) {
           this.reasoningCache.set(k, v as string);
         }
-        fs.appendFileSync(
-          'deepseek_payload_debug.log',
-          `[CACHE] Cargadas ${this.reasoningCache.size} entradas desde disco.\n`,
+        debugAppend(
+          `[CACHE] Loaded ${this.reasoningCache.size} entries from disk.\n`,
         );
       }
-    } catch (e) {
-      // Ignore loading errors
+    } catch {
+      // Ignore loading errors — the cache is best-effort.
     }
     this.cacheLoaded = true;
   }
 
   private static saveCache() {
     try {
+      fs.mkdirSync(DEEPSEEK_STATE_DIR, { recursive: true });
       const data = Object.fromEntries(this.reasoningCache);
       fs.writeFileSync(this.CACHE_FILE, JSON.stringify(data, null, 2));
-    } catch (e) {
-      // Ignore saving errors
+    } catch {
+      // Ignore saving errors — never fail the API path because of cache I/O.
     }
   }
 
@@ -106,19 +167,30 @@ export class DeepSeekContentGenerator implements ContentGenerator {
   /**
    * Generates a stable message signature for the cache.
    * Ignores thoughts (since the CLI core strips them) but includes text and tools.
+   *
+   * IMPORTANT: An empty `tool_calls` array and `undefined` MUST produce the
+   * same key. The streaming save path passes `undefined` for messages without
+   * tool calls, while the load path (`mapGoogleToDeepSeek`) passes `[]` from
+   * `fnCallParts.map(...)`. Without normalization, text-only assistant
+   * messages between user turns suffer cache misses, dropping their
+   * `reasoning_content` and triggering DeepSeek 400 errors in tool-using
+   * conversations.
    */
   private getMessageKey(text: string, tool_calls?: any[]): string {
     const cleanText = text.trim().replace(/\s+/g, ' ');
 
-    const calls = tool_calls
-      ?.map((tc: any) => ({
-        name: tc.name || tc.function?.name,
-        args:
-          typeof (tc.args || tc.function?.arguments) === 'string'
-            ? tc.args || tc.function?.arguments
-            : JSON.stringify(tc.args || tc.function?.arguments || {}),
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+    const hasCalls = Array.isArray(tool_calls) && tool_calls.length > 0;
+    const calls = hasCalls
+      ? tool_calls!
+          .map((tc: any) => ({
+            name: tc.name || tc.function?.name,
+            args:
+              typeof (tc.args || tc.function?.arguments) === 'string'
+                ? tc.args || tc.function?.arguments
+                : JSON.stringify(tc.args || tc.function?.arguments || {}),
+          }))
+          .sort((a, b) => a.name.localeCompare(b.name))
+      : undefined;
 
     return JSON.stringify({ text: cleanText, calls });
   }
@@ -183,10 +255,21 @@ export class DeepSeekContentGenerator implements ContentGenerator {
             (p: any) => p.text && !p.thought && p.type !== 'thought',
           );
 
-          // Triple-Check recovery strategy with Stable Signature:
-          // 1. Direct property (if it survived)
-          // 2. Parts with thought flag (if the Core respected them)
-          // 3. GLOBAL CACHE with Stable Signature (our definitive protection)
+          // Recovery strategy for `reasoning_content` (in priority order):
+          //   1. `_deepseekReasoning` smuggled on a Part — survives the
+          //      Gemini Core's history pipeline because it is just a custom
+          //      property on a non-thought Part (text or functionCall).
+          //   2. `reasoning_content` directly on the Content object — works
+          //      only inside a single request, the Core does not preserve it.
+          //   3. Thought parts — usually filtered out by the Core.
+          //   4. Disk-backed cache keyed by a stable text+tool_calls signature
+          //      — last-resort fallback.
+          const smuggledReasoning =
+            parts
+              .map((p: any) => p?.[REASONING_FIELD])
+              .find((v: unknown) => typeof v === 'string' && v) ||
+            undefined;
+
           const assistantText =
             textParts.map((p: any) => p.text).join('') || '';
           const tool_calls = fnCallParts.map((p: any) => ({
@@ -199,14 +282,18 @@ export class DeepSeekContentGenerator implements ContentGenerator {
           const cachedReasoning =
             DeepSeekContentGenerator.reasoningCache.get(messageKey);
 
-          if (cachedReasoning) {
-            fs.appendFileSync(
-              'deepseek_payload_debug.log',
+          if (smuggledReasoning) {
+            debugAppend(
+              `[REASONING SMUGGLED] Recovered for: ${assistantText.substring(0, 30)}...\n`,
+            );
+          } else if (cachedReasoning) {
+            debugAppend(
               `[CACHE HIT] Recovered for: ${assistantText.substring(0, 30)}... (Key: ${messageKey.substring(0, 50)})\n`,
             );
           }
 
           const reasoning_content =
+            smuggledReasoning ||
             content.reasoning_content ||
             thoughtParts
               .map((p: any) => {
@@ -304,7 +391,12 @@ export class DeepSeekContentGenerator implements ContentGenerator {
       stream: false,
     };
 
-    // Map Gemini tools to OpenAI function-calling format
+    // Map Gemini tools to OpenAI function-calling format.
+    // Tools are sorted alphabetically by name to ensure a deterministic
+    // serialization across requests. DeepSeek's context cache matches by
+    // exact prefix bytes, so any reordering of `tools[]` (which the Gemini
+    // Core does not guarantee) would invalidate the cache prefix and
+    // multiply input cost by ~10x for cache misses.
     const geminiTools = request.config?.tools;
 
     if (Array.isArray(geminiTools) && geminiTools.length > 0) {
@@ -325,6 +417,9 @@ export class DeepSeekContentGenerator implements ContentGenerator {
         }
       }
       if (openAiTools.length > 0) {
+        openAiTools.sort((a: any, b: any) =>
+          a.function.name.localeCompare(b.function.name),
+        );
         body.tools = openAiTools;
       }
     }
@@ -381,22 +476,46 @@ export class DeepSeekContentGenerator implements ContentGenerator {
       parts.push({ text: message.content });
     }
 
+    // Smuggle reasoning_content into a Part property so it survives the
+    // Gemini Core's history pipeline (which strips `thought` parts and any
+    // custom Content-level fields). Attach to the FIRST non-thought Part —
+    // either a functionCall or a text part — both of which are preserved.
+    // The thought part itself (if any) is filtered, so attaching to it would
+    // be useless.
+    if (message.reasoning_content) {
+      const carrier = parts.find(
+        (p: any) => p && !p.thought && (p.text !== undefined || p.functionCall),
+      );
+      if (carrier) {
+        carrier[REASONING_FIELD] = message.reasoning_content;
+      }
+    }
+
+    // Map DeepSeek's `prompt_cache_hit_tokens` to the standard
+    // `cachedContentTokenCount` field so the existing telemetry, chat
+    // recording service, and UI counters automatically reflect cache
+    // efficiency. A high `cachedContentTokenCount / promptTokenCount` ratio
+    // means the system is reusing prefix bytes at 1/10 the cost.
+    const usage = deepseekResponse.usage ?? {};
+    logCacheStats('non-stream', usage);
     const response: any = {
       candidates: [
         {
           content: {
             role: 'model',
             parts: parts.length > 0 ? parts : [{ text: '' }],
-            // Protection: Save the reasoning directly in the content object
+            // Best-effort: also save reasoning on the Content object. The
+            // Gemini Core typically strips this, but it can help intra-request.
             reasoning_content: message.reasoning_content,
           },
           finishReason: 'STOP',
         },
       ],
       usageMetadata: {
-        promptTokenCount: deepseekResponse.usage?.prompt_tokens,
-        candidatesTokenCount: deepseekResponse.usage?.completion_tokens,
-        totalTokenCount: deepseekResponse.usage?.total_tokens,
+        promptTokenCount: usage.prompt_tokens,
+        candidatesTokenCount: usage.completion_tokens,
+        totalTokenCount: usage.total_tokens,
+        cachedContentTokenCount: usage.prompt_cache_hit_tokens,
       },
     };
 
@@ -414,8 +533,7 @@ export class DeepSeekContentGenerator implements ContentGenerator {
         message.content || '',
         message.tool_calls,
       );
-      fs.appendFileSync(
-        'deepseek_payload_debug.log',
+      debugAppend(
         `[CACHE SAVE] Saving for: ${(message.content || '').substring(0, 30)}... (Key: ${messageKey.substring(0, 50)})\n`,
       );
       DeepSeekContentGenerator.reasoningCache.set(
@@ -447,14 +565,9 @@ export class DeepSeekContentGenerator implements ContentGenerator {
       `[DeepSeek] Sending request to ${this.baseUrl}/chat/completions`,
     );
 
-    try {
-      fs.appendFileSync(
-        'deepseek_payload_debug.log',
-        `--- REQUEST AT ${new Date().toISOString()} ---\n${JSON.stringify(body, null, 2)}\n\n`,
-      );
-    } catch (e) {
-      // Ignore
-    }
+    debugAppend(
+      `--- REQUEST AT ${new Date().toISOString()} ---\n${JSON.stringify(body, null, 2)}\n\n`,
+    );
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -482,16 +595,16 @@ export class DeepSeekContentGenerator implements ContentGenerator {
   ): Promise<AsyncGenerator<GenerateContentResponse>> {
     const body = this.mapGoogleToDeepSeek(request);
     body.stream = true;
+    // Required to receive a final usage chunk with `prompt_cache_hit_tokens`
+    // and `prompt_cache_miss_tokens` — DeepSeek does not include usage in
+    // streaming responses by default, which makes cost monitoring and cache
+    // efficiency tracking impossible without this flag.
+    body.stream_options = { include_usage: true };
     const self = this;
 
-    try {
-      fs.appendFileSync(
-        'deepseek_payload_debug.log',
-        `--- STREAM REQUEST AT ${new Date().toISOString()} ---\n${JSON.stringify(body, null, 2)}\n\n`,
-      );
-    } catch (e) {
-      // Ignore
-    }
+    debugAppend(
+      `--- STREAM REQUEST AT ${new Date().toISOString()} ---\n${JSON.stringify(body, null, 2)}\n\n`,
+    );
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -582,13 +695,24 @@ export class DeepSeekContentGenerator implements ContentGenerator {
               }
             }
 
-            // Yield text content chunks
+            // Yield text content chunks. The FIRST non-empty content delta
+            // carries the accumulated `reasoning_content` as a smuggled
+            // property on the Part. Because the Gemini Core consolidates
+            // adjacent text parts into the FIRST one (mutating its `text`),
+            // properties attached to that first part survive history
+            // serialization. This gives us a reliable carrier for reasoning
+            // across multi-turn conversations even when the disk cache fails.
             if (deltaContent) {
+              const isFirstContentChunk = fullText.length === 0;
               fullText += deltaContent;
+              const part: any = { text: deltaContent };
+              if (isFirstContentChunk && fullReasoning) {
+                part[REASONING_FIELD] = fullReasoning;
+              }
               yield {
                 candidates: [
                   {
-                    content: { role: 'model', parts: [{ text: deltaContent }] },
+                    content: { role: 'model', parts: [part] },
                   },
                 ],
               } as GenerateContentResponse;
@@ -604,6 +728,7 @@ export class DeepSeekContentGenerator implements ContentGenerator {
               }
 
               if (hasToolCalls) {
+                let firstFnCall = true;
                 for (const idx of Object.keys(toolCallAcc).map(Number).sort()) {
                   const tc = toolCallAcc[idx];
                   let args = {};
@@ -612,9 +737,18 @@ export class DeepSeekContentGenerator implements ContentGenerator {
                   } catch {
                     args = { _raw: tc.arguments };
                   }
-                  parts.push({
+                  const part: any = {
                     functionCall: { id: tc.id, name: tc.name, args },
-                  });
+                  };
+                  // Smuggle reasoning_content on the FIRST functionCall part
+                  // so it survives the Core's history pipeline even when the
+                  // assistant produced no text content (the common case for
+                  // tool-only sub-turns).
+                  if (firstFnCall && fullReasoning) {
+                    part[REASONING_FIELD] = fullReasoning;
+                    firstFnCall = false;
+                  }
+                  parts.push(part);
                   fnCalls.push({ id: tc.id, name: tc.name, args });
                 }
               }
@@ -637,10 +771,16 @@ export class DeepSeekContentGenerator implements ContentGenerator {
                         promptTokenCount: json.usage.prompt_tokens,
                         candidatesTokenCount: json.usage.completion_tokens,
                         totalTokenCount: json.usage.total_tokens,
+                        cachedContentTokenCount:
+                          json.usage.prompt_cache_hit_tokens,
                       },
                     }
                   : {}),
               };
+
+              if (json.usage) {
+                logCacheStats('stream', json.usage);
+              }
 
               if (fnCalls.length > 0) {
                 finalChunk.functionCalls = fnCalls;
@@ -649,7 +789,7 @@ export class DeepSeekContentGenerator implements ContentGenerator {
               // Save to cache for the next turn (Streaming) with stable signature
               if (fullReasoning) {
                 // For streaming, reconstruct accumulated tool_calls if they exist
-                const fnCalls = hasToolCalls
+                const fnCallsForKey = hasToolCalls
                   ? Object.keys(toolCallAcc)
                       .map(Number)
                       .sort()
@@ -659,9 +799,8 @@ export class DeepSeekContentGenerator implements ContentGenerator {
                       }))
                   : undefined;
 
-                const messageKey = self.getMessageKey(fullText, fnCalls);
-                fs.appendFileSync(
-                  'deepseek_payload_debug.log',
+                const messageKey = self.getMessageKey(fullText, fnCallsForKey);
+                debugAppend(
                   `[CACHE SAVE STREAM] Saving for: ${fullText.substring(0, 30)}... (Key: ${messageKey.substring(0, 50)})\n`,
                 );
                 DeepSeekContentGenerator.reasoningCache.set(

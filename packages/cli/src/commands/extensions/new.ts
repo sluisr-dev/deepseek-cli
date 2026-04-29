@@ -69,7 +69,7 @@ async function handleNew(args: NewArgs) {
     debugLogger.log(`Successfully created new extension at ${args.path}.`);
   }
   debugLogger.log(
-    `You can install this using "gemini extensions link ${args.path}" to test it out.`,
+    `You can install this using "deepseek extensions link ${args.path}" to test it out.`,
   );
 }
 

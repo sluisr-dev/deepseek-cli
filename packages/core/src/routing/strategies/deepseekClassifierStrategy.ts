@@ -15,7 +15,12 @@ import { DEEPSEEK_CHAT_MODEL, DEEPSEEK_REASONER_MODEL } from '../../config/model
 import { debugLogger } from '../../utils/debugLogger.js';
 import type { LocalLiteRtLmClient } from '../../core/localLiteRtLmClient.js';
 
-const COMPLEXITY_THRESHOLD = 50;
+// Threshold tuned to escalate to deepseek-v4-pro only for genuinely complex
+// tasks (architecture, broad refactors, multi-file debugging). v4-pro costs
+// ~5x more input and ~3x more output than v4-flash, plus thinking-mode
+// reasoning tokens. A score of 70+ corresponds to "Complex" and "Strategic"
+// in the classifier prompt — routine code changes should run on flash.
+const COMPLEXITY_THRESHOLD = 70;
 
 const CLASSIFIER_PROMPT = `You are a task complexity classifier. Analyze the user's request and assign a complexity score from 1 to 100.
 
@@ -74,6 +79,11 @@ export class DeepSeekClassifierStrategy implements RoutingStrategy {
           max_tokens: 100,
           temperature: 0,
           stream: false,
+          // The classifier is a lightweight "score 1-100" task — no
+          // chain-of-thought needed. Disabling thinking mode skips
+          // `reasoning_content` generation entirely, halving the latency
+          // and cost of every routing decision.
+          thinking: { type: 'disabled' },
         }),
         signal: context.signal,
       });

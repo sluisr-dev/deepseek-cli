@@ -62,7 +62,7 @@ export async function handleUpdate(args: UpdateArgs) {
           .join('\n');
         coreEvents.emitFeedback(
           'error',
-          `Extension "${args.name}" not found.\n\nInstalled extensions:\n${installedExtensions}\n\nRun "gemini extensions list" for details.`,
+          `Extension "${args.name}" not found.\n\nInstalled extensions:\n${installedExtensions}\n\nRun "deepseek extensions list" for details.`,
         );
         return;
       }

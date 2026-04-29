@@ -16,6 +16,7 @@ import {
   type ExecuteOptions,
 } from './tools.js';
 import type { MessageBus } from '../confirmation-bus/message-bus.js';
+import fs from 'node:fs';
 import path from 'node:path';
 import type { Config } from '../config/config.js';
 import { EXIT_PLAN_MODE_TOOL_NAME } from './tool-names.js';
@@ -27,9 +28,19 @@ import { PlanExecutionEvent } from '../telemetry/types.js';
 import { getExitPlanModeDefinition } from './definitions/coreTools.js';
 import { resolveToolDeclaration } from './definitions/resolver.js';
 import { getPlanModeExitMessage } from '../utils/approvalModeUtils.js';
+import { debugLogger } from '../utils/debugLogger.js';
 
 export interface ExitPlanModeParams {
   plan_filename: string;
+  /**
+   * Optional inline plan body. When provided AND the resolved plan file does
+   * not yet exist, the tool writes this content to the file before validating.
+   * This makes `exit_plan_mode` resilient to models that present the plan in
+   * chat without first invoking `write_file` (DeepSeek V4 frequently does
+   * this). When the file already exists this parameter is ignored to avoid
+   * silently overwriting a deliberate prior edit.
+   */
+  plan_content?: string;
 }
 
 export class ExitPlanModeTool extends BaseDeclarativeTool<
@@ -118,6 +129,31 @@ export class ExitPlanModeInvocation extends BaseToolInvocation<
     abortSignal: AbortSignal,
   ): Promise<ToolExitPlanModeConfirmationDetails | false> {
     const resolvedPlanPath = this.getResolvedPlanPath();
+
+    // If the model passed inline plan content AND the file does not exist
+    // yet, materialize it now. The resolved path is already constrained to
+    // the project plans directory by `validateToolParamValues`, so this
+    // write cannot escape into source code or arbitrary filesystem locations.
+    const inlineContent = this.params.plan_content;
+    if (
+      typeof inlineContent === 'string' &&
+      inlineContent.trim().length > 0 &&
+      !fs.existsSync(resolvedPlanPath)
+    ) {
+      try {
+        await fs.promises.mkdir(path.dirname(resolvedPlanPath), {
+          recursive: true,
+        });
+        await fs.promises.writeFile(resolvedPlanPath, inlineContent, 'utf-8');
+        debugLogger.debug(
+          `[exit_plan_mode] Materialized inline plan to ${resolvedPlanPath}`,
+        );
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        this.planValidationError = `Failed to write inline plan content to ${resolvedPlanPath}: ${message}`;
+        return false;
+      }
+    }
 
     const pathError = await validatePlanPath(
       this.params.plan_filename,

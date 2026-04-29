@@ -442,7 +442,7 @@ export class UpdateExtensionCommand implements Command {
 
     return {
       name: this.name,
-      data: 'Headless extension updating requires internal UI dispatches. Please use `gemini extensions update` directly in the terminal.',
+      data: 'Headless extension updating requires internal UI dispatches. Please use `deepseek extensions update` directly in the terminal.',
     };
   }
 }
