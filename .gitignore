@@ -72,3 +72,6 @@ temp_agents/
 
 # conductor extension and planning directories
 conductor/
+docs/changelogs/latest.md
+docs/changelogs/preview.md
+docs/changelogs/index.md
